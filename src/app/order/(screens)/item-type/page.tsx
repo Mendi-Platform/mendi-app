@@ -72,7 +72,7 @@ const OrderItemPage = () => {
           }
         </p>
       )}
-      <Button label="Fortsett" link="/" />
+      <Button label="Fortsett" link="/order/description" />
     </>
   );
 };

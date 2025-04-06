@@ -28,7 +28,7 @@ const OrderItemPage = () => {
         <ButtonOption label="Sy på ny knapp" active={choice === ItemsChoices.NewButton} onClick={() => setChoice(ItemsChoices.NewButton)}/>
         <ButtonOption label="Fest på beltehemper" active={choice === ItemsChoices.BeltHole} onClick={() => setChoice(ItemsChoices.BeltHole)}/>        
       </div>
-      <Button label="Fortsett" link="/"/>
+      <Button label="Fortsett" link="/order/item-type"/>
     </>
   );
 };

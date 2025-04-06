@@ -11,7 +11,7 @@ const ButtonOption = ({ label, logo, active, onClick }: Props) => {
   return (
     <div
       onClick={onClick}
-      className={`flex flex-row items-center gap-3 rounded-[18px] px-6 h-16 cursor-pointer ${
+      className={`flex flex-row items-center gap-3 rounded-[18px] px-6 h-15 cursor-pointer ${
         active ? "bg-[#BFDAFF]" : "bg-[#F3F3F3]"
       }`}
     >

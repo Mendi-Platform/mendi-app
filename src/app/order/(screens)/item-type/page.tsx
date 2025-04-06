@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
@@ -8,25 +8,71 @@ enum ItemsChoices {
   Normal,
   FalsktSkinn,
   Silke,
-  Tjukke
+  Tjukke,
 }
+
+const materialList = [
+  {
+    label: "Normale tekstiler",
+    value: ItemsChoices.Normal,
+    emphasizedDescription: "Normale tekstiler:",
+    description: "bomull, jeans, polyester, ullblanding",
+  },
+  {
+    label: "Falskt skinn",
+    value: ItemsChoices.FalsktSkinn,
+    emphasizedDescription: "Falskt skinn:",
+    description: "PU-, vegansk-, og imitert skinn",
+  },
+  {
+    label: "Silke eller delikate tekstiler",
+    value: ItemsChoices.Silke,
+    emphasizedDescription: "Silke eller delikate tekstiler:",
+    description: "Silke, chiffon, sateng, merino, kashmere",
+  },
+  {
+    label: "Tjukke tekstiler",
+    value: ItemsChoices.Tjukke,
+    emphasizedDescription: "Yttertøy eller tjukke tekstiler:",
+    description: "Ullkåpe, dunjakke, denimjakke, fleece",
+  },
+];
+
 const OrderItemPage = () => {
-  const [choice, setChoice] = useState<ItemsChoices>()
+  const [choice, setChoice] = useState<ItemsChoices>();
   return (
     <>
       <h1 className="font-medium text-lg mb-3">
-      Hva beskriver plagget ditt best?
+        Hva beskriver plagget ditt best?
       </h1>
       <p className="mb-11 text-sm font-normal text-[#797979]">
-      Velg ett alternativ. Noen materialer krever premium service.
+        Velg ett alternativ. Noen materialer krever premium service.
       </p>
       <div className="flex flex-col gap-3.5 mb-14">
-        <ButtonOption label="Normale tekstiler" active={choice === ItemsChoices.Normal} onClick={() => setChoice(ItemsChoices.Normal)}/>
-        <ButtonOption label="Falskt skinn" active={choice === ItemsChoices.FalsktSkinn} onClick={() => setChoice(ItemsChoices.FalsktSkinn)}/>
-        <ButtonOption label="Silke eller delikate tekstiler" active={choice === ItemsChoices.Silke} onClick={() => setChoice(ItemsChoices.Silke)}/>
-        <ButtonOption label="Tjukke tekstiler" active={choice === ItemsChoices.Tjukke} onClick={() => setChoice(ItemsChoices.Tjukke)}/>        
+        {materialList.map((material) => (
+          <ButtonOption
+            key={material.value}
+            label={material.label}
+            active={choice === material.value}
+            onClick={() => setChoice(material.value)}
+          />
+        ))}
       </div>
-      <Button label="Fortsett" link="/"/>
+      {choice !== undefined && (
+        <p className="text-sm mb-14">
+          <span className="font-semibold">
+            {
+              materialList.find((material) => material.value === choice)
+                ?.emphasizedDescription
+            }
+          </span>{" "}
+          {
+            materialList.find((material) => material.value === choice)
+              ?.description
+          }
+        </p>
+      )}
+      <Button label="Fortsett" link="/" />
     </>
   );
 };

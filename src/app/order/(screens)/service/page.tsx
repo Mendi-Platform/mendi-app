@@ -9,6 +9,22 @@ enum ServiceChoices {
   Adjustment,
 }
 
+const optionList = [
+  {
+    label: "Reparasjon",
+    value: ServiceChoices.Reparation,
+    description:
+      "Reparasjon er å fikse skader, som å lappe en revne eller bytte ut en ødelagt glidelås, for å gjøre plagget ditt så godt som nytt.",
+    link: "/order/reparation",
+  },
+  {
+    label: "Tilpasning",
+    value: ServiceChoices.Adjustment,
+    description:
+      "Tilpasning er å skreddersy passformen eller stilen på plagget ditt etter dine preferanser – som å forkorte lengden eller ta inn livet.",
+  },
+];
+
 const OrderServicePage = () => {
   const [choice, setChoice] = useState<ServiceChoices>();
   return (
@@ -19,24 +35,23 @@ const OrderServicePage = () => {
         et senere tidspunkt.
       </p>
       <div className="flex flex-col gap-3.5 mb-14">
-        <ButtonOption
-          onClick={() => setChoice(ServiceChoices.Reparation)}
-          active={choice === ServiceChoices.Reparation}
-          label="Reparasjon"
-        />
-        <ButtonOption
-          onClick={() => setChoice(ServiceChoices.Adjustment)}
-          active={choice === ServiceChoices.Adjustment}
-          label="Tilpasning"
-        />
+        {optionList.map((option) => (
+          <ButtonOption
+            key={option.value}
+            onClick={() => setChoice(option.value)}
+            active={choice === option.value}
+            label={option.label}
+          />
+        ))}
       </div>
-      {choice === ServiceChoices.Reparation && <p className="text-sm mb-14">
-        <span className="font-semibold">Reparasjon</span> er å fikse skader, som å lappe en revne eller bytte ut en
-        ødelagt glidelås, for å gjøre plagget ditt så godt som nytt.
-      </p>}
-      {choice === ServiceChoices.Adjustment && <p className="text-sm mb-14">
-        <span className="font-semibold">Tilpasning</span> er å skreddersy passformen eller stilen på plagget ditt etter dine preferanser – som å forkorte lengden eller ta inn livet.
-      </p>}
+      {choice !== undefined && (
+        <p className="text-sm mb-14">
+          <span className="font-semibold">
+            {optionList.find((opt) => opt.value === choice)?.label}
+          </span>{" "}
+          {optionList.find((opt) => opt.value === choice)?.description}
+        </p>
+      )}
       <Button label="Fortsett" link="/order/item" />
     </>
   );

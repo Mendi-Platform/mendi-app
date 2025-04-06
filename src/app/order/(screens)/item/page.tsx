@@ -25,6 +25,54 @@ enum ItemsChoices {
   Frakk,
 }
 
+const itemList = [
+  {
+    label: "Bukse",
+    value: ItemsChoices.Pants,
+    logo: pants
+  },
+  {
+    label: "Genser",
+    value: ItemsChoices.Sweather,
+    logo: sweater
+  },
+  {
+    label: "Jakke",
+    value: ItemsChoices.Jacket,
+    logo: jacket
+  },
+  {
+    label: "Kjole",
+    value: ItemsChoices.Dress,
+    logo: dress
+  },
+  {
+    label: "Skjorte",
+    value: ItemsChoices.Shirt,
+    logo: shirt
+  },
+  {
+    label: "Blazer",
+    value: ItemsChoices.Blazer,
+    logo: blazer
+  },
+  {
+    label: "Skjørt",
+    value: ItemsChoices.Skirt,
+    logo: skirt
+  },
+  {
+    label: "Jeans",
+    value: ItemsChoices.Jeans,
+    logo: jeans
+  },
+  {
+    label: "Kåpe/Frakk",
+    value: ItemsChoices.Frakk,
+    logo: frakk
+  },
+];
+
 const OrderItemPage = () => {
   const [choice, setChoice] = useState<ItemsChoices>()
   return (
@@ -36,16 +84,16 @@ const OrderItemPage = () => {
         Velg ett plagg. Du kan legge til et annet plagg senere.
       </p>
       <div className="flex flex-col gap-3.5 mb-14">
-        <ButtonOption label="Bukse" logo={pants} active={choice === ItemsChoices.Pants} onClick={() => setChoice(ItemsChoices.Pants)} />
-        <ButtonOption label="Genser" logo={sweater} active={choice === ItemsChoices.Sweather} onClick={() => setChoice(ItemsChoices.Sweather)} />
-        <ButtonOption label="Jakke" logo={jacket} active={choice === ItemsChoices.Jacket} onClick={() => setChoice(ItemsChoices.Jacket)} />
-        <ButtonOption label="Kjole" logo={dress} active={choice === ItemsChoices.Dress} onClick={() => setChoice(ItemsChoices.Dress)} />
-        <ButtonOption label="Skjorte" logo={shirt} active={choice === ItemsChoices.Shirt} onClick={() => setChoice(ItemsChoices.Shirt)} />
-        <ButtonOption label="Blazer" logo={blazer} active={choice === ItemsChoices.Blazer} onClick={() => setChoice(ItemsChoices.Blazer)} />
-        <ButtonOption label="Skjørt" logo={skirt} active={choice === ItemsChoices.Skirt} onClick={() => setChoice(ItemsChoices.Skirt)} />
-        <ButtonOption label="Jeans" logo={jeans} active={choice === ItemsChoices.Jeans} onClick={() => setChoice(ItemsChoices.Jeans)} />
-        <ButtonOption label="Kåpe/Frakk" logo={frakk} active={choice === ItemsChoices.Frakk} onClick={() => setChoice(ItemsChoices.Frakk)} />
-      </div>
+        {itemList.map((item) => (
+          <ButtonOption
+            key={item.value}
+            label={item.label}
+            logo={item.logo}
+            active={choice === item.value}
+            onClick={() => setChoice(item.value)}
+          />
+        ))}
+      </div>      
       <Button label="Fortsett" link="/order/reparation"/>
     </>
   );

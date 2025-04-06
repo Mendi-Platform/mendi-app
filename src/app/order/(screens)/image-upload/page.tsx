@@ -1,7 +1,6 @@
 "use client";
 
 import Button from "../../(components)/button";
-import Image from "next/image";
 import UploadSelector from "./upload-selector";
 
 const OrderImageUploadPage = () => {

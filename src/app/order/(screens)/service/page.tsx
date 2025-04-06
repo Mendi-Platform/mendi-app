@@ -27,6 +27,11 @@ const optionList = [
 
 const OrderServicePage = () => {
   const [choice, setChoice] = useState<ServiceChoices>();
+
+  const onChoice = (value: ServiceChoices) => {
+    setChoice(value)
+    sessionStorage.setItem("service", value.toString());
+  }
   return (
     <>
       <h1 className="font-medium text-lg mb-3">Hvilken tjeneste trenger du?</h1>
@@ -38,7 +43,7 @@ const OrderServicePage = () => {
         {optionList.map((option) => (
           <ButtonOption
             key={option.value}
-            onClick={() => setChoice(option.value)}
+            onClick={() => onChoice(option.value)}
             active={choice === option.value}
             label={option.label}
           />

@@ -1,45 +1,48 @@
 "use client";
 
+import { FormContext, Material } from "@/provider/FormProvider";
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-import { useState } from "react";
-
-enum ItemsChoices {
-  Normal,
-  FalsktSkinn,
-  Silke,
-  Tjukke,
-}
+import { useContext } from "react";
 
 const materialList = [
   {
     label: "Normale tekstiler",
-    value: ItemsChoices.Normal,
+    value: Material.Normal,
     emphasizedDescription: "Normale tekstiler:",
     description: "bomull, jeans, polyester, ullblanding",
   },
   {
     label: "Falskt skinn",
-    value: ItemsChoices.FalsktSkinn,
+    value: Material.FalsktSkinn,
     emphasizedDescription: "Falskt skinn:",
     description: "PU-, vegansk-, og imitert skinn",
   },
   {
     label: "Silke eller delikate tekstiler",
-    value: ItemsChoices.Silke,
+    value: Material.Silke,
     emphasizedDescription: "Silke eller delikate tekstiler:",
     description: "Silke, chiffon, sateng, merino, kashmere",
   },
   {
     label: "Tjukke tekstiler",
-    value: ItemsChoices.Tjukke,
+    value: Material.Tjukke,
     emphasizedDescription: "Yttertøy eller tjukke tekstiler:",
     description: "Ullkåpe, dunjakke, denimjakke, fleece",
   },
 ];
 
 const OrderItemPage = () => {
-  const [choice, setChoice] = useState<ItemsChoices>();
+  const formContext = useContext(FormContext);
+
+  const choice = formContext.formData.material;
+
+  const onChoice = (value: Material) => {
+    formContext.updateFormData({
+      ...formContext.formData,
+      material: value,
+    });
+  };
   return (
     <>
       <h1 className="font-medium text-lg mb-3">
@@ -54,7 +57,7 @@ const OrderItemPage = () => {
             key={material.value}
             label={material.label}
             active={choice === material.value}
-            onClick={() => setChoice(material.value)}
+            onClick={() => onChoice(material.value)}
           />
         ))}
       </div>

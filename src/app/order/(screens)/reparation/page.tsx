@@ -2,28 +2,21 @@
 
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-import { Fragment, useState } from "react";
+import { Fragment, useContext } from "react";
 import Incrementer from "../../(components)/incrementer";
-
-enum ItemsChoices {
-  ReplaceLock,
-  BigHole,
-  SmallHole,
-  NewButton,
-  BeltHole,
-}
+import { FormContext, RepairType } from "@/provider/FormProvider";
 
 const repairList = [
   {
     label: "Bytte glidelås",
-    value: ItemsChoices.ReplaceLock,
+    value: RepairType.ReplaceLock,
     emphasizedDescription: "Er glidelåsen din gåen?",
     description: "Vi fjerner den gamle, velger en ny og syr den på plass.",
   },
   {
     label: "Stort hull",
     canIncrement: true,
-    value: ItemsChoices.BigHole,
+    value: RepairType.BigHole,
     emphasizedDescription: "Hull i favoritten?",
     description:
       "Vær obs på at reparasjonen kan bli synlig hvis hullet er på et godt synlig sted eller hvis syeren ikke har en tråd som matcher helt. ",
@@ -31,7 +24,7 @@ const repairList = [
   {
     label: "Lite hull",
     canIncrement: true,
-    value: ItemsChoices.SmallHole,
+    value: RepairType.SmallHole,
     emphasizedDescription: "Hull i favoritten?",
     description:
       "Vær obs på at reparasjonen kan bli synlig hvis hullet er på et godt synlig sted eller hvis syeren ikke har en tråd som matcher helt. ",
@@ -39,7 +32,7 @@ const repairList = [
   {
     label: "Sy på ny knapp",
     canIncrement: true,
-    value: ItemsChoices.NewButton,
+    value: RepairType.NewButton,
     emphasizedDescription: "Har knappen løsnet eller falt av?",
     description:
       "Vi fester den raskt igjen. Send gjerne med en lignende knapp (det er ofte en ekstra på vaskelappen) for best mulig match. ",
@@ -47,7 +40,7 @@ const repairList = [
   {
     label: "Fest på beltehemper",
     canIncrement: true,
-    value: ItemsChoices.BeltHole,
+    value: RepairType.BeltHole,
     emphasizedDescription: "Har beltehempene røket?",
     description:
       "Har beltehempene røket? Vi syr dem på igjen og fikser eventuelle hull. Pris per beltehempe som skal repareres.",
@@ -55,7 +48,16 @@ const repairList = [
 ];
 
 const OrderItemPage = () => {
-  const [choice, setChoice] = useState<ItemsChoices>();
+  const formContext = useContext(FormContext);
+
+  const choice = formContext.formData.repairType;
+
+  const onChoice = (value: RepairType) => {
+    formContext.updateFormData({
+      ...formContext.formData,
+      repairType: value,
+    });
+  };
   return (
     <>
       <h1 className="font-medium text-lg mb-3">
@@ -70,7 +72,7 @@ const OrderItemPage = () => {
             <ButtonOption
               label={repair.label}
               active={choice === repair.value}
-              onClick={() => setChoice(repair.value)}
+              onClick={() => onChoice(repair.value)}
             />
             {repair.canIncrement && choice === repair.value && (
               <div className="flex justify-center">
@@ -91,7 +93,7 @@ const OrderItemPage = () => {
           {repairList.find((repair) => repair.value === choice)?.description}
         </p>
       )}
-      <Button label="Fortsett" link="/order/item-type" />
+      <Button label="Fortsett" link="/order/material" />
     </>
   );
 };

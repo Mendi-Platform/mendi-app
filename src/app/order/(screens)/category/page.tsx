@@ -1,16 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useContext } from "react";
 import Button from "../../(components)/button";
 import CategoryCard from "./categoryCard";
-
-enum Category {
-  Premium,
-  Standard,
-}
+import { Category, FormContext } from "@/provider/FormProvider";
 
 const OrderServicePage = () => {
-  const [choice, setChoice] = useState<Category>();
+  const formContext = useContext(FormContext);
+
+  const choice = formContext.formData.category;
+
+  const onChoice = (value: Category) => {
+    formContext.updateFormData({
+      ...formContext.formData,
+      category: value,
+    });
+  };
 
   return (
     <>
@@ -20,14 +25,16 @@ const OrderServicePage = () => {
       </p>
       <div className="flex flex-col gap-3.5 mb-14">
         <CategoryCard
-          onClick={() => setChoice(Category.Standard)}
+          formData={formContext.formData}
+          onClick={() => onChoice(Category.Standard)}
           isActive={choice === Category.Standard}
           title="Standard"
           description="Kvalitet til en god pris."
           price={300}
         />
         <CategoryCard
-          onClick={() => setChoice(Category.Premium)}
+          formData={formContext.formData}
+          onClick={() => onChoice(Category.Premium)}
           isActive={choice === Category.Premium}
           isPopular
           title="Premium"
@@ -35,7 +42,7 @@ const OrderServicePage = () => {
           price={500}
         />
       </div>
-      <Button label="Fortsett" link="/order/item" />
+      <Button label="Fortsett" link="/" />
     </>
   );
 };

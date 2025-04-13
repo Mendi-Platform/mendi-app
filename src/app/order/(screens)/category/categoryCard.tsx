@@ -1,3 +1,5 @@
+import { FormData } from "@/provider/FormProvider";
+
 interface Props {
   title: string;
   description: string;
@@ -5,6 +7,7 @@ interface Props {
   isPopular?: boolean;
   isActive: boolean;
   onClick: () => void;
+  formData: FormData
 }
 
 const CategoryCard = ({
@@ -14,6 +17,7 @@ const CategoryCard = ({
   price,
   onClick,
   isPopular = false,
+  formData
 }: Props) => {
   return (
     <div
@@ -43,12 +47,12 @@ const CategoryCard = ({
       {isActive && (
         <div className="flex flex-col gap-8 mt-4 border-t border-t-white pt-6">
           <div className="flex flex-row justify-between">
-            <InfoSection />
-            <InfoSection />
+            <InfoSection title="Tjeneste" value={formData.repairType.toString()} />
+            <InfoSection title={formData.repairType.toString()} value={formData.service.toString()} />
           </div>
           <div className="flex flex-row justify-between">
-            <InfoSection />
-            <InfoSection />
+            <InfoSection title="Plagg" value={formData.garment.toString()} />
+            <InfoSection title="Materiale" value={formData.garment.toString()} />
           </div>
         </div>
       )}
@@ -56,11 +60,11 @@ const CategoryCard = ({
   );
 };
 
-const InfoSection = () => {
+const InfoSection = ({ title, value }: {title: string, value: string}) => {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[#7F7F7F] text-xs font-normal">Tjeneste</span>
-      <span className="text-[#242424] text-sm font-normal">Main service</span>
+      <span className="text-[#7F7F7F] text-xs font-normal">{title}</span>
+      <span className="text-[#242424] text-sm font-normal">{value}</span>
     </div>
   );
 };

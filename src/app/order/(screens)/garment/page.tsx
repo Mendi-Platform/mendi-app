@@ -12,69 +12,58 @@ import skirt from "../../../assets/icons/skirt.png";
 import jeans from "../../../assets/icons/jeans.png";
 import frakk from "../../../assets/icons/frakk.png";
 import { useState } from "react";
+import { Garment } from "@/provider/FormProvider";
 
-enum ItemsChoices {
-  Pants,
-  Sweather,
-  Jacket,
-  Dress,
-  Shirt,
-  Blazer,
-  Skirt,
-  Jeans,
-  Frakk,
-}
-
-const itemList = [
+const garmentList = [
   {
     label: "Bukse",
-    value: ItemsChoices.Pants,
+    value: Garment.Pants,
     logo: pants
   },
   {
     label: "Genser",
-    value: ItemsChoices.Sweather,
+    value: Garment.Sweather,
     logo: sweater
   },
   {
     label: "Jakke",
-    value: ItemsChoices.Jacket,
+    value: Garment.Jacket,
     logo: jacket
   },
   {
     label: "Kjole",
-    value: ItemsChoices.Dress,
+    value: Garment.Dress,
     logo: dress
   },
   {
     label: "Skjorte",
-    value: ItemsChoices.Shirt,
+    value: Garment.Shirt,
     logo: shirt
   },
   {
     label: "Blazer",
-    value: ItemsChoices.Blazer,
+    value: Garment.Blazer,
     logo: blazer
   },
   {
     label: "Skjørt",
-    value: ItemsChoices.Skirt,
+    value: Garment.Skirt,
     logo: skirt
   },
   {
     label: "Jeans",
-    value: ItemsChoices.Jeans,
+    value: Garment.Jeans,
     logo: jeans
   },
   {
     label: "Kåpe/Frakk",
-    value: ItemsChoices.Frakk,
+    value: Garment.Frakk,
     logo: frakk
   },
 ];
 
-const OrderItemPage = () => {
-  const [choice, setChoice] = useState<ItemsChoices>()
+const GarmentPage = () => {
+  const [choice, setChoice] = useState<Garment>()
   return (
     <>
       <h1 className="font-medium text-lg mb-3">
@@ -84,7 +73,7 @@ const OrderItemPage = () => {
         Velg ett plagg. Du kan legge til et annet plagg senere.
       </p>
       <div className="flex flex-col gap-3.5 mb-14">
-        {itemList.map((item) => (
+        {garmentList.map((item) => (
           <ButtonOption
             key={item.value}
             label={item.label}
@@ -99,4 +88,4 @@ const OrderItemPage = () => {
   );
 };
 
-export default OrderItemPage;
+export default GarmentPage;

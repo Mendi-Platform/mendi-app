@@ -1,13 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useContext } from "react";
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-
-enum ServiceChoices {
-  Reparation,
-  Adjustment,
-}
+import { FormContext, ServiceChoices } from "@/provider/FormProvider";
 
 const optionList = [
   {
@@ -26,12 +22,16 @@ const optionList = [
 ];
 
 const OrderServicePage = () => {
-  const [choice, setChoice] = useState<ServiceChoices>();
+  const formContext = useContext(FormContext);
+
+  const choice = formContext.formData.service;
 
   const onChoice = (value: ServiceChoices) => {
-    setChoice(value)
-    sessionStorage.setItem("service", value.toString());
-  }
+    formContext.updateFormData({
+      ...formContext.formData,
+      service: value,
+    });
+  };
   return (
     <>
       <h1 className="font-medium text-lg mb-3">Hvilken tjeneste trenger du?</h1>
@@ -57,7 +57,7 @@ const OrderServicePage = () => {
           {optionList.find((opt) => opt.value === choice)?.description}
         </p>
       )}
-      <Button label="Fortsett" link="/order/item" />
+      <Button label="Fortsett" link="/order/garment" />
     </>
   );
 };

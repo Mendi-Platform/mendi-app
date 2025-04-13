@@ -1,9 +1,9 @@
 "use client";
 
-import { FormContext, Material } from "@/provider/FormProvider";
+import { Material } from "@/types/formData";
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-import { useContext } from "react";
+import useFormDataStore from "@/store";
 
 const materialList = [
   {
@@ -33,13 +33,13 @@ const materialList = [
 ];
 
 const OrderItemPage = () => {
-  const formContext = useContext(FormContext);
-
-  const choice = formContext.formData.material;
+  const store = useFormDataStore();
+  const formData = store.formData;
+  const updateFormData = store.updateFormData;
 
   const onChoice = (value: Material) => {
-    formContext.updateFormData({
-      ...formContext.formData,
+    updateFormData({
+      ...formData,
       material: value,
     });
   };
@@ -56,22 +56,24 @@ const OrderItemPage = () => {
           <ButtonOption
             key={material.value}
             label={material.label}
-            active={choice === material.value}
+            active={formData.material === material.value}
             onClick={() => onChoice(material.value)}
           />
         ))}
       </div>
-      {choice !== undefined && (
+      {formData.material !== undefined && (
         <p className="text-sm mb-14">
           <span className="font-semibold">
             {
-              materialList.find((material) => material.value === choice)
-                ?.emphasizedDescription
+              materialList.find(
+                (material) => material.value === formData.material
+              )?.emphasizedDescription
             }
           </span>{" "}
           {
-            materialList.find((material) => material.value === choice)
-              ?.description
+            materialList.find(
+              (material) => material.value === formData.material
+            )?.description
           }
         </p>
       )}

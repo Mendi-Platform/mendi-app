@@ -1,18 +1,19 @@
 "use client";
 
-import { useContext } from "react";
 import Button from "../../(components)/button";
 import CategoryCard from "./categoryCard";
-import { Category, FormContext } from "@/provider/FormProvider";
+import useFormDataStore from "@/store";
+import { Category } from "@/types/formData";
 
 const OrderServicePage = () => {
-  const formContext = useContext(FormContext);
+  const store = useFormDataStore();
 
-  const choice = formContext.formData.category;
+  const formData = store.formData;
+  const updateFormData = store.updateFormData;
 
   const onChoice = (value: Category) => {
-    formContext.updateFormData({
-      ...formContext.formData,
+    updateFormData({
+      ...formData,
       category: value,
     });
   };
@@ -25,17 +26,17 @@ const OrderServicePage = () => {
       </p>
       <div className="flex flex-col gap-3.5 mb-14">
         <CategoryCard
-          formData={formContext.formData}
+          formData={formData}
           onClick={() => onChoice(Category.Standard)}
-          isActive={choice === Category.Standard}
+          isActive={formData.category === Category.Standard}
           title="Standard"
           description="Kvalitet til en god pris."
           price={300}
         />
         <CategoryCard
-          formData={formContext.formData}
+          formData={formData}
           onClick={() => onChoice(Category.Premium)}
-          isActive={choice === Category.Premium}
+          isActive={formData.category === Category.Premium}
           isPopular
           title="Premium"
           description="Få tilgang til våre mest erfarne syere."

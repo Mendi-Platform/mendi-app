@@ -1,9 +1,9 @@
 "use client";
 
-import { useContext } from "react";
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-import { FormContext, ServiceChoices } from "@/provider/FormProvider";
+import { ServiceChoices } from "@/types/formData";
+import useFormDataStore from "@/store";
 
 const optionList = [
   {
@@ -22,13 +22,15 @@ const optionList = [
 ];
 
 const OrderServicePage = () => {
-  const formContext = useContext(FormContext);
+  const store = useFormDataStore();
+  const formData = store.formData;
+  const updateFormData = store.updateFormData;
 
-  const choice = formContext.formData.service;
+  const choice = formData.service;
 
   const onChoice = (value: ServiceChoices) => {
-    formContext.updateFormData({
-      ...formContext.formData,
+    updateFormData({
+      ...formData,
       service: value,
     });
   };

@@ -1,4 +1,10 @@
-import { FormData } from "@/provider/FormProvider";
+import { FormData } from "@/types/formData";
+import {
+  getRepairTypeLabel,
+  getServiceLabel,
+  getGarmentLabel,
+  getMaterialLabel,
+} from "@/utils/enumLabels";
 
 interface Props {
   title: string;
@@ -7,7 +13,7 @@ interface Props {
   isPopular?: boolean;
   isActive: boolean;
   onClick: () => void;
-  formData: FormData
+  formData: FormData;
 }
 
 const CategoryCard = ({
@@ -17,7 +23,7 @@ const CategoryCard = ({
   price,
   onClick,
   isPopular = false,
-  formData
+  formData,
 }: Props) => {
   return (
     <div
@@ -47,12 +53,24 @@ const CategoryCard = ({
       {isActive && (
         <div className="flex flex-col gap-8 mt-4 border-t border-t-white pt-6">
           <div className="flex flex-row justify-between">
-            <InfoSection title="Tjeneste" value={formData.repairType.toString()} />
-            <InfoSection title={formData.repairType.toString()} value={formData.service.toString()} />
+            <InfoSection
+              title="Tjeneste"
+              value={getServiceLabel(formData.service)}
+            />
+            <InfoSection
+              title="Reparasjonstype"
+              value={getRepairTypeLabel(formData.repairType)}
+            />
           </div>
           <div className="flex flex-row justify-between">
-            <InfoSection title="Plagg" value={formData.garment.toString()} />
-            <InfoSection title="Materiale" value={formData.garment.toString()} />
+            <InfoSection
+              title="Plagg"
+              value={getGarmentLabel(formData.garment)}
+            />
+            <InfoSection
+              title="Materiale"
+              value={getMaterialLabel(formData.material)}
+            />
           </div>
         </div>
       )}
@@ -60,7 +78,7 @@ const CategoryCard = ({
   );
 };
 
-const InfoSection = ({ title, value }: {title: string, value: string}) => {
+const InfoSection = ({ title, value }: { title: string; value: string }) => {
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[#7F7F7F] text-xs font-normal">{title}</span>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
@@ -11,59 +11,68 @@ import blazer from "../../../assets/icons/blazer.png";
 import skirt from "../../../assets/icons/skirt.png";
 import jeans from "../../../assets/icons/jeans.png";
 import frakk from "../../../assets/icons/frakk.png";
-import { useState } from "react";
-import { Garment } from "@/provider/FormProvider";
-
+import { Garment } from "@/types/formData";
+import useFormDataStore from "@/store";
 const garmentList = [
   {
     label: "Bukse",
     value: Garment.Pants,
-    logo: pants
+    logo: pants,
   },
   {
     label: "Genser",
     value: Garment.Sweather,
-    logo: sweater
+    logo: sweater,
   },
   {
     label: "Jakke",
     value: Garment.Jacket,
-    logo: jacket
+    logo: jacket,
   },
   {
     label: "Kjole",
     value: Garment.Dress,
-    logo: dress
+    logo: dress,
   },
   {
     label: "Skjorte",
     value: Garment.Shirt,
-    logo: shirt
+    logo: shirt,
   },
   {
     label: "Blazer",
     value: Garment.Blazer,
-    logo: blazer
+    logo: blazer,
   },
   {
     label: "Skjørt",
     value: Garment.Skirt,
-    logo: skirt
+    logo: skirt,
   },
   {
     label: "Jeans",
     value: Garment.Jeans,
-    logo: jeans
+    logo: jeans,
   },
   {
     label: "Kåpe/Frakk",
     value: Garment.Frakk,
-    logo: frakk
+    logo: frakk,
   },
 ];
 
 const GarmentPage = () => {
-  const [choice, setChoice] = useState<Garment>()
+  const store = useFormDataStore();
+  const formData = store.formData;
+  const updateFormData = store.updateFormData;
+
+  const onChoice = (value: Garment) => {
+    updateFormData({
+      ...formData,
+      garment: value,
+    });
+  };
+
   return (
     <>
       <h1 className="font-medium text-lg mb-3">
@@ -78,12 +87,12 @@ const GarmentPage = () => {
             key={item.value}
             label={item.label}
             logo={item.logo}
-            active={choice === item.value}
-            onClick={() => setChoice(item.value)}
+            active={formData.garment === item.value}
+            onClick={() => onChoice(item.value)}
           />
         ))}
-      </div>      
-      <Button label="Fortsett" link="/order/reparation"/>
+      </div>
+      <Button label="Fortsett" link="/order/reparation" />
     </>
   );
 };

@@ -2,9 +2,10 @@
 
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-import { Fragment, useContext } from "react";
+import { Fragment } from "react";
 import Incrementer from "../../(components)/incrementer";
-import { FormContext, RepairType } from "@/provider/FormProvider";
+import { RepairType } from "@/types/formData";
+import useFormDataStore from "@/store";
 
 const repairList = [
   {
@@ -48,13 +49,13 @@ const repairList = [
 ];
 
 const OrderItemPage = () => {
-  const formContext = useContext(FormContext);
-
-  const choice = formContext.formData.repairType;
+  const store = useFormDataStore();
+  const formData = store.formData;
+  const updateFormData = store.updateFormData;
 
   const onChoice = (value: RepairType) => {
-    formContext.updateFormData({
-      ...formContext.formData,
+    updateFormData({
+      ...formData,
       repairType: value,
     });
   };
@@ -71,10 +72,10 @@ const OrderItemPage = () => {
           <Fragment key={repair.value}>
             <ButtonOption
               label={repair.label}
-              active={choice === repair.value}
+              active={formData.repairType === repair.value}
               onClick={() => onChoice(repair.value)}
             />
-            {repair.canIncrement && choice === repair.value && (
+            {repair.canIncrement && formData.repairType === repair.value && (
               <div className="flex justify-center">
                 <Incrementer key={`${repair.value}-incrementer`} />
               </div>
@@ -82,15 +83,18 @@ const OrderItemPage = () => {
           </Fragment>
         ))}
       </div>
-      {choice !== undefined && (
+      {formData.repairType !== undefined && (
         <p className="text-sm mb-14">
           <span className="font-semibold">
             {
-              repairList.find((repair) => repair.value === choice)
+              repairList.find((repair) => repair.value === formData.repairType)
                 ?.emphasizedDescription
             }
           </span>{" "}
-          {repairList.find((repair) => repair.value === choice)?.description}
+          {
+            repairList.find((repair) => repair.value === formData.repairType)
+              ?.description
+          }
         </p>
       )}
       <Button label="Fortsett" link="/order/material" />

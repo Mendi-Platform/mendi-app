@@ -60,6 +60,7 @@ const CategoryCard = ({
             <InfoSection
               title="Reparasjonstype"
               value={getRepairTypeLabel(formData.repairType)}
+              rightAlign
             />
           </div>
           <div className="flex flex-row justify-between">
@@ -70,6 +71,7 @@ const CategoryCard = ({
             <InfoSection
               title="Materiale"
               value={getMaterialLabel(formData.material)}
+              rightAlign
             />
           </div>
         </div>
@@ -78,9 +80,17 @@ const CategoryCard = ({
   );
 };
 
-const InfoSection = ({ title, value }: { title: string; value: string }) => {
+const InfoSection = ({
+  title,
+  value,
+  rightAlign = false,
+}: {
+  title: string;
+  value: string;
+  rightAlign?: boolean;
+}) => {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={`flex flex-col gap-1.5 ${rightAlign ? "items-end" : ""}`}>
       <span className="text-[#7F7F7F] text-xs font-normal">{title}</span>
       <span className="text-[#242424] text-sm font-normal">{value}</span>
     </div>

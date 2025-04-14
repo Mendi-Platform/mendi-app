@@ -48,7 +48,7 @@ const repairList = [
   },
 ];
 
-const OrderItemPage = () => {
+const ReparationPage = () => {
   const store = useFormDataStore();
   const formData = store.formData;
   const updateFormData = store.updateFormData;
@@ -97,9 +97,14 @@ const OrderItemPage = () => {
           }
         </p>
       )}
-      <Button label="Fortsett" link="/order/material" />
+      <Button
+        label="Fortsett"
+        link="/order/material"
+        prefetch
+        disabled={formData.repairType === RepairType.None}
+      />
     </>
   );
 };
 
-export default OrderItemPage;
+export default ReparationPage;

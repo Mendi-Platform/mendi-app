@@ -43,7 +43,11 @@ const OrderServicePage = () => {
           price={500}
         />
       </div>
-      <Button label="Fortsett" link="/" />
+      <Button
+        label="Fortsett"
+        link="/"
+        disabled={formData.category === Category.None}
+      />
     </>
   );
 };

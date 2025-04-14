@@ -4,6 +4,7 @@ export interface FormData {
   repairType: RepairType;
   material: Material;
   garment: Garment;
+  description: string;
 }
 
 export enum Garment {

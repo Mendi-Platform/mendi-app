@@ -51,7 +51,7 @@ const OrderServicePage = () => {
           />
         ))}
       </div>
-      {choice !== undefined && (
+      {choice !== ServiceChoices.None && (
         <p className="text-sm mb-14">
           <span className="font-semibold">
             {optionList.find((opt) => opt.value === choice)?.label}
@@ -59,7 +59,12 @@ const OrderServicePage = () => {
           {optionList.find((opt) => opt.value === choice)?.description}
         </p>
       )}
-      <Button label="Fortsett" link="/order/garment" />
+      <Button
+        prefetch
+        disabled={choice === ServiceChoices.None}
+        label="Fortsett"
+        link="/order/garment"
+      />
     </>
   );
 };

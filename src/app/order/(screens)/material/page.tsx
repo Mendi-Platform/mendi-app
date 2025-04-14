@@ -77,7 +77,12 @@ const OrderItemPage = () => {
           }
         </p>
       )}
-      <Button label="Fortsett" link="/order/description" />
+      <Button
+        label="Fortsett"
+        link="/order/description"
+        prefetch
+        disabled={formData.material === Material.None}
+      />
     </>
   );
 };

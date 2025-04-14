@@ -92,7 +92,12 @@ const GarmentPage = () => {
           />
         ))}
       </div>
-      <Button label="Fortsett" link="/order/reparation" />
+      <Button
+        label="Fortsett"
+        link="/order/reparation"
+        prefetch
+        disabled={formData.garment === Garment.None}
+      />
     </>
   );
 };

@@ -20,6 +20,7 @@ const useFormDataStore = create<FormDataStore>((set) => ({
     repairType: RepairType.None,
     material: Material.None,
     garment: Garment.None,
+    description: "",
   },
   updateFormData: (formData: FormData) => set({ formData }),
 }));

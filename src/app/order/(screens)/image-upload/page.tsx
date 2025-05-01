@@ -21,7 +21,7 @@ const OrderImageUploadPage = () => {
         <UploadSelector keyId="5" />
       </div>
 
-      <Button label="Fortsett" link="/order/category" prefetch />
+      <Button label="Fortsett" link="/order/service-level" prefetch />
     </>
   );
 };

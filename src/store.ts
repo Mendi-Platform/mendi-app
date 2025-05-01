@@ -6,6 +6,7 @@ import {
   Material,
   RepairType,
   ServiceChoices,
+  MainCategory,
 } from "./types/formData";
 
 interface FormDataStore {
@@ -20,7 +21,14 @@ const useFormDataStore = create<FormDataStore>((set) => ({
     repairType: RepairType.None,
     material: Material.None,
     garment: Garment.None,
+    mainCategory: MainCategory.None,
     description: "",
+    repairDetails: {
+      quantity: undefined,
+      option: undefined,
+      measurementMethod: undefined,
+      measurements: undefined,
+    },
   },
   updateFormData: (formData: FormData) => set({ formData }),
 }));

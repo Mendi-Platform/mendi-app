@@ -14,25 +14,25 @@ const materialList = [
   },
   {
     label: "Falskt skinn",
-    value: Material.FalsktSkinn,
+    value: Material.FauxLeather,
     emphasizedDescription: "Falskt skinn:",
     description: "PU-, vegansk-, og imitert skinn",
   },
   {
     label: "Silke eller delikate tekstiler",
-    value: Material.Silke,
+    value: Material.Silk,
     emphasizedDescription: "Silke eller delikate tekstiler:",
     description: "Silke, chiffon, sateng, merino, kashmere",
   },
   {
     label: "Tjukke tekstiler",
-    value: Material.Tjukke,
+    value: Material.Thick,
     emphasizedDescription: "Yttertøy eller tjukke tekstiler:",
     description: "Ullkåpe, dunjakke, denimjakke, fleece",
   },
 ];
 
-const OrderItemPage = () => {
+const MaterialPage = () => {
   const store = useFormDataStore();
   const formData = store.formData;
   const updateFormData = store.updateFormData;
@@ -45,12 +45,9 @@ const OrderItemPage = () => {
   };
   return (
     <>
-      <h1 className="font-medium text-lg mb-3">
+      <h1 className="font-medium text-lg mb-11">
         Hva beskriver plagget ditt best?
       </h1>
-      <p className="mb-11 text-sm font-normal text-[#797979]">
-        Velg ett alternativ. Noen materialer krever premium service.
-      </p>
       <div className="flex flex-col gap-3.5 mb-14">
         {materialList.map((material) => (
           <ButtonOption
@@ -61,7 +58,7 @@ const OrderItemPage = () => {
           />
         ))}
       </div>
-      {formData.material !== undefined && (
+      {formData.material !== Material.None && (
         <p className="text-sm mb-14">
           <span className="font-semibold">
             {
@@ -87,4 +84,4 @@ const OrderItemPage = () => {
   );
 };
 
-export default OrderItemPage;
+export default MaterialPage;

@@ -7,16 +7,20 @@ import {
 
 export const getRepairTypeLabel = (type: RepairType): string => {
   switch (type) {
-    case RepairType.ReplaceLock:
+    case RepairType.ReplaceZipper:
       return "Bytte glidelås";
-    case RepairType.BigHole:
-      return "Stort hull";
-    case RepairType.SmallHole:
-      return "Lite hull";
-    case RepairType.NewButton:
+    case RepairType.Hole:
+      return "Hull";
+    case RepairType.SewButton:
       return "Sy på ny knapp";
-    case RepairType.BeltHole:
+    case RepairType.BeltLoops:
       return "Fest på beltehemper";
+    case RepairType.Hemming:
+      return "Legge opp";
+    case RepairType.AdjustWaist:
+      return "Ta inn i livet";
+    case RepairType.OtherRequest:
+      return "Andre forespørsel";
     default:
       return "";
   }
@@ -24,7 +28,7 @@ export const getRepairTypeLabel = (type: RepairType): string => {
 
 export const getServiceLabel = (service: ServiceChoices): string => {
   switch (service) {
-    case ServiceChoices.Reparation:
+    case ServiceChoices.Repair:
       return "Reparasjon";
     case ServiceChoices.Adjustment:
       return "Tilpasning";
@@ -35,24 +39,16 @@ export const getServiceLabel = (service: ServiceChoices): string => {
 
 export const getGarmentLabel = (garment: Garment): string => {
   switch (garment) {
-    case Garment.Pants:
-      return "Bukse";
-    case Garment.Sweather:
-      return "Genser";
-    case Garment.Jacket:
-      return "Jakke";
-    case Garment.Dress:
-      return "Kjole";
-    case Garment.Shirt:
-      return "Skjorte";
-    case Garment.Blazer:
-      return "Blazer";
-    case Garment.Skirt:
-      return "Skjørt";
-    case Garment.Jeans:
-      return "Jeans";
-    case Garment.Frakk:
-      return "Kåpe/Frakk";
+    case Garment.UpperBody:
+      return "Overdel";
+    case Garment.LowerBody:
+      return "Underdel";
+    case Garment.DressAndSuit:
+      return "Kjole/dress";
+    case Garment.OuterWear:
+      return "Jakke/Yttertøy";
+    case Garment.LeatherItems:
+      return "Skinnplagg";
     default:
       return "";
   }
@@ -62,11 +58,11 @@ export const getMaterialLabel = (material: Material): string => {
   switch (material) {
     case Material.Normal:
       return "Normale tekstiler";
-    case Material.FalsktSkinn:
+    case Material.FauxLeather:
       return "Falskt skinn";
-    case Material.Silke:
+    case Material.Silk:
       return "Silke eller delikate tekstiler";
-    case Material.Tjukke:
+    case Material.Thick:
       return "Tjukke tekstiler";
     default:
       return "";

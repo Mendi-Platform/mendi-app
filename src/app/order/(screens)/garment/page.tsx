@@ -2,62 +2,39 @@
 
 import Button from "../../(components)/button";
 import ButtonOption from "../../(components)/buttonOption";
-import pants from "../../../assets/icons/pants.png";
-import sweater from "../../../assets/icons/sweater.png";
-import jacket from "../../../assets/icons/jacket.png";
-import dress from "../../../assets/icons/dress.png";
-import shirt from "../../../assets/icons/shirt.png";
-import blazer from "../../../assets/icons/blazer.png";
-import skirt from "../../../assets/icons/skirt.png";
-import jeans from "../../../assets/icons/jeans.png";
-import frakk from "../../../assets/icons/frakk.png";
+import sweater from "@/app/assets/icons/sweater.png";
+import pants from "@/app/assets/icons/pants.png";
+import dress from "@/app/assets/icons/dress.png";
+import frakk from "@/app/assets/icons/frakk.png";
+import leather from "@/app/assets/icons/leather.svg";
 import { Garment } from "@/types/formData";
 import useFormDataStore from "@/store";
+
 const garmentList = [
   {
-    label: "Bukse",
-    value: Garment.Pants,
-    logo: pants,
-  },
-  {
-    label: "Genser",
-    value: Garment.Sweather,
+    label: "Overdel",
+    value: Garment.UpperBody,
     logo: sweater,
   },
   {
-    label: "Jakke",
-    value: Garment.Jacket,
-    logo: jacket,
+    label: "Underdel",
+    value: Garment.LowerBody,
+    logo: pants,
   },
   {
-    label: "Kjole",
-    value: Garment.Dress,
+    label: "Kjole/dress",
+    value: Garment.DressAndSuit,
     logo: dress,
   },
   {
-    label: "Skjorte",
-    value: Garment.Shirt,
-    logo: shirt,
-  },
-  {
-    label: "Blazer",
-    value: Garment.Blazer,
-    logo: blazer,
-  },
-  {
-    label: "Skjørt",
-    value: Garment.Skirt,
-    logo: skirt,
-  },
-  {
-    label: "Jeans",
-    value: Garment.Jeans,
-    logo: jeans,
-  },
-  {
-    label: "Kåpe/Frakk",
-    value: Garment.Frakk,
+    label: "Jakke/Yttertøy",
+    value: Garment.OuterWear,
     logo: frakk,
+  },
+  {
+    label: "Skinnplagg",
+    value: Garment.LeatherItems,
+    logo: leather,
   },
 ];
 
@@ -75,12 +52,9 @@ const GarmentPage = () => {
 
   return (
     <>
-      <h1 className="font-medium text-lg mb-3">
-        Hvilket plagg ønsker du å reparere
+      <h1 className="font-medium text-lg mb-11">
+        Hvilken type plagg vil du registrere?
       </h1>
-      <p className="mb-11 text-sm font-normal text-[#797979]">
-        Velg ett plagg. Du kan legge til et annet plagg senere.
-      </p>
       <div className="flex flex-col gap-3.5 mb-14">
         {garmentList.map((item) => (
           <ButtonOption
@@ -94,7 +68,7 @@ const GarmentPage = () => {
       </div>
       <Button
         label="Fortsett"
-        link="/order/reparation"
+        link="/order/service"
         prefetch
         disabled={formData.garment === Garment.None}
       />

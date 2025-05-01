@@ -10,14 +10,14 @@ import useFormDataStore from "@/store";
 const repairList = [
   {
     label: "Bytte glidelås",
-    value: RepairType.ReplaceLock,
+    value: RepairType.ReplaceZipper,
     emphasizedDescription: "Er glidelåsen din gåen?",
     description: "Vi fjerner den gamle, velger en ny og syr den på plass.",
   },
   {
     label: "Stort hull",
     canIncrement: true,
-    value: RepairType.BigHole,
+    value: RepairType.Hole,
     emphasizedDescription: "Hull i favoritten?",
     description:
       "Vær obs på at reparasjonen kan bli synlig hvis hullet er på et godt synlig sted eller hvis syeren ikke har en tråd som matcher helt. ",
@@ -25,7 +25,7 @@ const repairList = [
   {
     label: "Lite hull",
     canIncrement: true,
-    value: RepairType.SmallHole,
+    value: RepairType.Hole,
     emphasizedDescription: "Hull i favoritten?",
     description:
       "Vær obs på at reparasjonen kan bli synlig hvis hullet er på et godt synlig sted eller hvis syeren ikke har en tråd som matcher helt. ",
@@ -33,7 +33,7 @@ const repairList = [
   {
     label: "Sy på ny knapp",
     canIncrement: true,
-    value: RepairType.NewButton,
+    value: RepairType.SewButton,
     emphasizedDescription: "Har knappen løsnet eller falt av?",
     description:
       "Vi fester den raskt igjen. Send gjerne med en lignende knapp (det er ofte en ekstra på vaskelappen) for best mulig match. ",
@@ -41,7 +41,7 @@ const repairList = [
   {
     label: "Fest på beltehemper",
     canIncrement: true,
-    value: RepairType.BeltHole,
+    value: RepairType.BeltLoops,
     emphasizedDescription: "Har beltehempene røket?",
     description:
       "Har beltehempene røket? Vi syr dem på igjen og fikser eventuelle hull. Pris per beltehempe som skal repareres.",

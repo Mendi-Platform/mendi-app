@@ -48,11 +48,13 @@ export enum RepairType {
   None,
   ReplaceZipper,
   SewButton,
+  SmallHole,
+  BigHole,
   Hole,
   BeltLoops,
   Hemming,
   AdjustWaist,
-  OtherRequest
+  OtherRequest,
 }
 
 export enum Category {

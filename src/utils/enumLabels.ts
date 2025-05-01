@@ -20,7 +20,7 @@ export const getRepairTypeLabel = (type: RepairType): string => {
     case RepairType.AdjustWaist:
       return "Ta inn i livet";
     case RepairType.OtherRequest:
-      return "Andre forespørsel";
+      return "Annen forespørsel";
     default:
       return "";
   }

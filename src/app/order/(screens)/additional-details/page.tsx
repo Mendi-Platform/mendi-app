@@ -14,22 +14,32 @@ interface AdditionalDetailsConfig {
 
 const detailsConfigs: Record<RepairType, AdditionalDetailsConfig> = {
   [RepairType.ReplaceZipper]: {
-    title: "I hvilken farge er glidelåsen?",
+    title: "Hvor lang og hvilken farge ønsker du at glidelåsen skal være?",
     subtitle: "(valgfritt)",
     placeholder: "For eksempel: Sort glidelås som matcher plagget",
   },
   [RepairType.SewButton]: {
-    title: "Hvor er plassert knappen/knappene?",
+    title: "Hvor er knappen(e) plassert?",
     subtitle: "(valgfritt)",
     placeholder: "For eksempel: Knapp nummer to fra toppen på skjorten",
   },
   [RepairType.Hole]: {
-    title: "Hvor er plassert hullet/hullene?",
+    title: "Hvor er hullet/hullene plassert?",
+    subtitle: "(valgfritt)",
+    placeholder: "For eksempel: Hull på høyre kne",
+  },
+  [RepairType.SmallHole]: {
+    title: "Hvor er hullet/hullene plassert?",
+    subtitle: "(valgfritt)",
+    placeholder: "For eksempel: Hull på høyre kne",
+  },
+  [RepairType.BigHole]: {
+    title: "HHvor er hullet/hullene plassert?",
     subtitle: "(valgfritt)",
     placeholder: "For eksempel: Hull på høyre kne",
   },
   [RepairType.BeltLoops]: {
-    title: "Hvilket stoff skal beltehempen lages av?",
+    title: "Hvilken farge/stoff vil du at beltehempene skal lages av?",
     subtitle: "(valgfritt)",
     placeholder: "For eksempel: Samme stoff som buksen, eller beskriv ønsket materiale",
   },

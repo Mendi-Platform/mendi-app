@@ -38,6 +38,16 @@ const measurementConfigs: Record<RepairType, MeasurementConfig> = {
     subtitle: "Beskriv hvor på plagget hullet er.",
     placeholder: "For eksempel: Hull på høyre kne.",
   },
+  [RepairType.SmallHole]: {
+    title: "Hvor er hullet/hullene?",
+    subtitle: "Beskriv hvor på plagget hullet er.",
+    placeholder: "For eksempel: Hull på høyre kne.",
+  },
+  [RepairType.BigHole]: {
+    title: "Hvor er hullet/hullene?",
+    subtitle: "Beskriv hvor på plagget hullet er.",
+    placeholder: "For eksempel: Hull på høyre kne.",
+  },
   [RepairType.BeltLoops]: {
     title: "Hvor er beltehempen?",
     subtitle: "Beskriv hvilken beltehempe som skal repareres.",

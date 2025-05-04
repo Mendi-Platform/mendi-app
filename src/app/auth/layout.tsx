@@ -1,8 +1,14 @@
-export default function AuthLayout({
+import { verifySession } from "@/lib/dal";
+
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await verifySession()
+  console.log('session', session)
+
+
   return (
     <div className="min-h-screen bg-white">
       <div className="px-5">

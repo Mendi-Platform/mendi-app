@@ -38,7 +38,7 @@ export default function ServiceLevelPage() {
       ...formData,
       category
     });
-    router.push("/order/material");
+    router.push("/order/temp-cart");
   };
 
   return (

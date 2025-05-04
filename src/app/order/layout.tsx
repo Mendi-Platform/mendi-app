@@ -1,11 +1,14 @@
 import Image from "next/image";
 import logo from "@/app/assets/logo/mendi-app.svg";
+import { verifySession } from "@/lib/dal";
 
-export default function OrderLayout({
+export default async function OrderLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await verifySession()
+    console.log('session', session)
   return (
     <div className="min-h-screen bg-white">
       <div className="px-5 border-b border-gray-200">

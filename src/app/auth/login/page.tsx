@@ -1,83 +1,67 @@
 "use client";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { createSession } from "@/lib/session";
+import { useState } from "react";
+import CheckEmailAction from "./checkEmailAction";
+import EmailLoginAction from "./emailLoginAction";
 
-export const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+enum EmailState {
+  NOT_CHECKED,
+  EXIST,
+  NOT_EXIST,
+}
 
 const LoginPage = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Simulate login logic
-    console.log("Logging in with", values);
+  const [emailState, setEmailState] = useState<EmailState>(
+    EmailState.NOT_CHECKED
+  );
 
-    // Create a session after successful login
-    await createSession(values.email);
+  const doCheckEmail = async () => {
+    const exist = await CheckEmailAction(email);
+    setEmailState(exist ? EmailState.EXIST : EmailState.NOT_EXIST);
+  };
 
-    // Redirect or show success message
-    console.log("Session created successfully");
+  const handleActionButton = () => {
+    if (emailState === EmailState.NOT_CHECKED) {
+        doCheckEmail();
+    } else if (emailState === EmailState.EXIST) {
+        EmailLoginAction(email, password);
+    }
   }
 
   return (
     <>
-      <h1 className="font-medium text-lg mb-3">Logg inn</h1>
-      <p className="mb-11 text-sm font-normal text-[#797979]">
-        Velkommen tilbake!
+      <h1 className="font-medium text-lg mb-2">Logg inn eller registrer deg</h1>
+      <p className="mb-11 text-sm font-normal text-neutral-500">På et sting!</p>
+      <p className="text-neutral-800 text-sm font-semibold mb-3">
+        E-postadresse
       </p>
+      <Input
+        className="mb-3"
+        onChange={(e) => setEmail(e.currentTarget.value)}
+      />
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-postadresse</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      {emailState === EmailState.EXIST && (
+        <>
+          <p className="text-neutral-800 text-sm font-semibold my-3">Passord</p>
+          <Input
+            type="password"            
+            onChange={(e) => setPassword(e.currentTarget.value)}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Passord</FormLabel>
-                <FormControl>
-                  <Input {...field} type="password" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Logg inn</Button>
-        </form>
-      </Form>
+          <span className="text-sm text-[#006EFF] font-semibold mb-10 mt-2">Glemt passord?</span>
+        </>
+      )}
+
+      {emailState === EmailState.NOT_CHECKED && (
+        <p className="text-neutral-800 text-sm font-normal mb-10">
+          Når du oppretter en konto, godtar du våre personvernregler og
+          retningslinjer for informasjonskapsler.{" "}
+        </p>
+      )}
+      <Button onClick={handleActionButton}>Logg inn</Button>
     </>
   );
 };

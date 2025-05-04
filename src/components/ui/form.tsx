@@ -89,19 +89,22 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 
 function FormLabel({
   className,
+  optional,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const { error, formItemId } = useFormField()
+}: React.ComponentProps<typeof LabelPrimitive.Root> & { optional?: boolean }) {
+  const { error, formItemId } = useFormField();
 
   return (
     <Label
       data-slot="form-label"
       data-error={!!error}
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={cn("data-[error=true]:text-destructive text-neutral-800 text-sm font-semibold mb-3", className)}
       htmlFor={formItemId}
       {...props}
-    />
-  )
+    >
+      {props.children} {optional && <span className="text-neutral-500">(valgfritt)</span>}
+    </Label>
+  );
 }
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {

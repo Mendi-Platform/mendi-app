@@ -3,7 +3,7 @@ import Link from "next/link";
 import logo from "@/app/assets/logo/mendi-app.svg";
 import { verifySession } from "@/lib/dal";
 import questionIcon from "@/app/assets/icons/question-icon.svg";
-import cartIcon from "@/app/assets/icons/cart-icon.png";
+import cartIcon from "@/app/assets/icons/cart-icon.svg";
 
 export default async function OrderLayout({
   children,

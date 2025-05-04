@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import CheckEmailAction from "./checkEmailAction";
 import EmailLoginAction from "./emailLoginAction";
+import SignUpAction from "./signupAction";
 
 enum EmailState {
   NOT_CHECKED,
@@ -14,6 +15,8 @@ enum EmailState {
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const [emailState, setEmailState] = useState<EmailState>(
     EmailState.NOT_CHECKED
@@ -26,11 +29,18 @@ const LoginPage = () => {
 
   const handleActionButton = () => {
     if (emailState === EmailState.NOT_CHECKED) {
-        doCheckEmail();
+      doCheckEmail();
     } else if (emailState === EmailState.EXIST) {
-        EmailLoginAction(email, password);
+      EmailLoginAction(email, password);
+    } else if (emailState === EmailState.NOT_EXIST) {
+      SignUpAction({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+      });
     }
-  }
+  };
 
   return (
     <>
@@ -48,10 +58,12 @@ const LoginPage = () => {
         <>
           <p className="text-neutral-800 text-sm font-semibold my-3">Passord</p>
           <Input
-            type="password"            
+            type="password"
             onChange={(e) => setPassword(e.currentTarget.value)}
           />
-          <span className="text-sm text-[#006EFF] font-semibold mb-10 mt-2">Glemt passord?</span>
+          <span className="text-sm text-[#006EFF] font-semibold mb-10 mt-2">
+            Glemt passord?
+          </span>
         </>
       )}
 
@@ -60,6 +72,28 @@ const LoginPage = () => {
           Når du oppretter en konto, godtar du våre personvernregler og
           retningslinjer for informasjonskapsler.{" "}
         </p>
+      )}
+
+      {emailState === EmailState.NOT_EXIST && (
+        <>
+        <p className="text-neutral-800 text-sm font-semibold my-3">Passord</p>
+          <Input
+            type="password"
+            onChange={(e) => setPassword(e.currentTarget.value)}
+          />
+          <p className="text-neutral-800 text-sm font-semibold mb-3">Fornavn</p>
+          <Input
+            className="mb-3"
+            onChange={(e) => setFirstName(e.currentTarget.value)}
+          />
+          <p className="text-neutral-800 text-sm font-semibold mb-3">
+            Etternavn
+          </p>
+          <Input
+            className="mb-3"
+            onChange={(e) => setLastName(e.currentTarget.value)}
+          />
+        </>
       )}
       <Button onClick={handleActionButton}>Logg inn</Button>
     </>

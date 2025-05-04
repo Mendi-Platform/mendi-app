@@ -69,7 +69,7 @@ const LinkButton = ({ label, link, disabled, prefetch = false, className = "" }:
   return (
     <Link
       prefetch={prefetch}
-      onNavigate={(e) => {
+      onClick={(e) => {
         if (disabled) {
           e.preventDefault();
         }

@@ -1,8 +1,8 @@
 "use client";
 
-import Button from "../../(components)/button";
 import { RepairType } from "@/types/formData";
 import useFormDataStore from "@/store";
+import { useRouter } from "next/navigation";
 
 interface QuantityConfig {
   title: string;
@@ -24,6 +24,7 @@ const QuantityPage = () => {
   const store = useFormDataStore();
   const formData = store.formData;
   const updateFormData = store.updateFormData;
+  const router = useRouter();
 
   const config = quantityConfigs[formData.repairType];
   const quantity = formData.repairDetails?.quantity || 1;
@@ -34,23 +35,38 @@ const QuantityPage = () => {
     return 399;
   };
 
-  const getPrice = () => {
+  const getPrice = (qty: number) => {
     if (formData.repairType === RepairType.BeltLoops) {
-      return getBeltLoopPrice(quantity);
+      return getBeltLoopPrice(qty);
     }
-    return quantity * (config?.pricePerUnit || 0);
+    return qty * (config?.pricePerUnit || 0);
   };
 
   const updateQuantity = (newQuantity: number) => {
     if (newQuantity < 1) return;
     if (formData.repairType === RepairType.BeltLoops && newQuantity > 5) return;
+    let detailsText = '';
+    if (formData.repairType === RepairType.SewButton) {
+      detailsText = `Antall knapper: ${newQuantity}`;
+    } else if (formData.repairType === RepairType.BeltLoops) {
+      detailsText = `Antall beltehemper: ${newQuantity}`;
+    }
     updateFormData({
       ...formData,
       repairDetails: {
         ...formData.repairDetails,
         quantity: newQuantity,
+        detailsText,
       },
     });
+  };
+
+  const handleContinue = () => {
+    updateFormData({
+      ...formData,
+      price: getPrice(quantity),
+    });
+    router.push("/order/add-image");
   };
 
   if (!config) return null;
@@ -81,8 +97,8 @@ const QuantityPage = () => {
           +
         </button>
       </div>
-      <div className="bg-[#E3EEFF] rounded-lg py-4 px-6 mb-14 flex flex-col items-center">
-        <span className="text-2xl">{getPrice()} kr</span>
+      <div className="bg-[#E3EEFF] rounded-lg py-2 px-6 mb-14 flex flex-col items-center">
+        <span className="text-2xl">{getPrice(quantity)} kr</span>
         <span className="text-sm text-[#797979]">
           {formData.repairType === RepairType.BeltLoops
             ? quantity <= 2
@@ -91,12 +107,13 @@ const QuantityPage = () => {
             : `Opptil ${quantity} knapper`}
         </span>
       </div>
-      <Button
-        label="Fortsett"
-        link="/order/additional-details"
-        prefetch
+      <button
+        className="block w-full text-center py-2.5 rounded-[20px] bg-[#006EFF] text-white hover:opacity-70 text-xl font-semibold disabled:bg-white disabled:text-[#A7A7A7] disabled:border disabled:border-black/30"
+        onClick={handleContinue}
         disabled={!formData.repairDetails?.quantity}
-      />
+      >
+        Fortsett
+      </button>
     </>
   );
 };

@@ -1,13 +1,14 @@
 "use client";
 
-import Button from "../../(components)/button";
-import ButtonOption from "../../(components)/buttonOption";
+import Button from "@/components/ui/button";
+import ButtonOption from "@/components/ui/buttonOption";
 import sweater from "@/app/assets/icons/sweater.png";
 import pants from "@/app/assets/icons/pants.png";
 import dress from "@/app/assets/icons/dress.png";
 import frakk from "@/app/assets/icons/frakk.png";
 import leather from "@/app/assets/icons/leather.svg";
-import { Garment } from "@/types/formData";
+import curtains from "@/app/assets/icons/curtain.svg";
+import { Garment, Category } from "@/types/formData";
 import useFormDataStore from "@/store";
 
 const garmentList = [
@@ -36,18 +37,25 @@ const garmentList = [
     value: Garment.LeatherItems,
     logo: leather,
   },
+  {
+    label: "Gardiner",
+    value: Garment.Curtains,
+    logo: curtains,
+  },
 ];
 
 const GarmentPage = () => {
   const store = useFormDataStore();
   const formData = store.formData;
-  const updateFormData = store.updateFormData;
+  const updateFormField = store.updateFormField;
 
   const onChoice = (value: Garment) => {
-    updateFormData({
-      ...formData,
-      garment: value,
-    });
+    updateFormField("garment", value);
+    if (value === Garment.OuterWear) {
+      updateFormField("category", Category.Premium);
+    } else {
+      updateFormField("category", Category.None);
+    }
   };
 
   return (

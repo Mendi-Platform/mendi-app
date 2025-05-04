@@ -1,9 +1,9 @@
 "use client";
 
-import Button from "../../(components)/button";
-import ButtonOption from "../../(components)/buttonOption";
-import { RepairType } from "@/types/formData";
+import ButtonOption from "@/components/ui/buttonOption";
+import { RepairType, Garment } from "@/types/formData";
 import useFormDataStore from "@/store";
+import { useRouter } from "next/navigation";
 
 const repairList = [
   {
@@ -39,26 +39,39 @@ const repairList = [
   {
     label: "Annen forespørsel",
     value: RepairType.OtherRequest,
-    nextPage: "/order/other-request",
+    nextPage: "/order/other-request-info",
+  },
+];
+
+const curtainRepairList = [
+  {
+    label: "Legge opp",
+    value: RepairType.Hemming,
+    nextPage: "/order/two-option",
+  },
+  {
+    label: "Annen forespørsel",
+    value: RepairType.OtherRequest,
+    nextPage: "/order/other-request-info",
   },
 ];
 
 const ServicePage = () => {
   const store = useFormDataStore();
   const formData = store.formData;
-  const updateFormData = store.updateFormData;
+  const router = useRouter();
 
   const onChoice = (value: RepairType) => {
-    updateFormData({
-      ...formData,
-      repairType: value,
-      repairDetails: {}, // Reset repair details when changing repair type
-    });
+    store.updateFormField("repairType", value);
   };
 
-  const selectedRepair = repairList.find(
-    (item) => item.value === formData.repairType
-  );
+  const handleContinue = () => {
+    const selectedOption = (formData.garment === Garment.Curtains ? curtainRepairList : repairList)
+      .find(item => item.value === formData.repairType);
+    if (selectedOption?.nextPage) {
+      router.push(selectedOption.nextPage);
+    }
+  };
 
   return (
     <>
@@ -66,7 +79,7 @@ const ServicePage = () => {
         Hvordan vil du at plagget skal repareres?
       </h1>
       <div className="flex flex-col gap-3.5 mb-14">
-        {repairList.map((item) => (
+        {(formData.garment === Garment.Curtains ? curtainRepairList : repairList).map((item) => (
           <ButtonOption
             key={item.value}
             label={item.label}
@@ -75,12 +88,18 @@ const ServicePage = () => {
           />
         ))}
       </div>
-      <Button
-        label="Fortsett"
-        link={selectedRepair?.nextPage || "/order/material"}
-        prefetch
+      <button
+        type="button"
+        onClick={handleContinue}
         disabled={formData.repairType === RepairType.None}
-      />
+        className={`block w-full text-center py-2.5 rounded-[20px]  ${
+          formData.repairType === RepairType.None
+            ? "bg-white text-[#A7A7A7] border border-black/30 cursor-auto"
+            : "bg-[#006EFF] text-white"
+        } hover:opacity-70 text-xl font-semibold`}
+      >
+        Fortsett
+      </button>
     </>
   );
 };

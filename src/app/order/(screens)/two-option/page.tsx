@@ -1,11 +1,11 @@
 "use client";
 
-import Button from "../../(components)/button";
-import ButtonOption from "../../(components)/buttonOption";
+import ButtonWithDetails from "@/components/ui/button-with-details";
 import { RepairType, TwoOptionType } from "@/types/formData";
 import useFormDataStore from "@/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Category } from "@/types/formData";
 
 interface OptionConfig {
   title: string;
@@ -75,11 +75,13 @@ const optionConfigs: Partial<Record<RepairType, OptionConfig>> = {
       {
         label: "Ett lag",
         value: TwoOptionType.SingleLayer,
+        subText: "Enkel tilspaning",
         price: 299,
       },
       {
         label: "To lag",
         value: TwoOptionType.MultipleLayers,
+        subText: "Krever litt mer tid",
         price: 399,
       },
     ],
@@ -101,13 +103,35 @@ const TwoOptionPage = () => {
   const config = optionConfigs[formData.repairType];
 
   const onChoice = (option: string) => {
+    if (!config) return;
+    const selected = config.options.find(o => o.value === option);
+    if (!selected) return;
+
+    // Calculate price based on category
+    let finalPrice = selected.price;
+    if (formData.category === Category.Premium) {
+      finalPrice += 100; // Premium adds 100kr to base price
+    }
+
     updateFormData({
       ...formData,
+      price: finalPrice,
       repairDetails: {
         ...formData.repairDetails,
         option,
+        detailsText: `${selected.label}${selected.subText ? ` (${selected.subText})` : ''}`,
       },
     });
+  };
+
+  const handleContinue = () => {
+    if (formData.repairType === RepairType.Hole) {
+      router.push("/order/mark-damage");
+    } else if (formData.repairType === RepairType.Hemming || formData.repairType === RepairType.AdjustWaist) {
+      router.push("/order/measurement");
+    } else {
+      router.push("/order/add-image");
+    }
   };
 
   if (!config) return null;
@@ -117,7 +141,7 @@ const TwoOptionPage = () => {
       <h1 className="font-medium text-lg mb-11">{config.title}</h1>
       <div className="flex flex-col gap-3.5 mb-14">
         {config.options.map((option) => (
-          <ButtonOption
+          <ButtonWithDetails
             key={option.value}
             label={option.label}
             subText={option.subText}
@@ -127,18 +151,14 @@ const TwoOptionPage = () => {
           />
         ))}
       </div>
-      <Button
-        label="Fortsett"
-        link={
-          formData.repairType === RepairType.Hemming || formData.repairType === RepairType.AdjustWaist 
-            ? "/order/measurement"
-            : formData.repairType === RepairType.ReplaceZipper || formData.repairType === RepairType.Hole
-              ? "/order/additional-details"
-              : "/order/material"
-        }
-        prefetch
+      <button
+        type="button"
+        onClick={handleContinue}
         disabled={!formData.repairDetails?.option}
-      />
+        className="block w-full text-center py-2.5 rounded-[20px] bg-[#006EFF] text-white hover:opacity-70 text-xl font-semibold"
+      >
+        Fortsett
+      </button>
     </>
   );
 };

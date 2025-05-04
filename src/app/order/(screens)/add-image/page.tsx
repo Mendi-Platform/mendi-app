@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "../../(components)/button";
+import Button from "../../../../components/ui/button";
 import useFormDataStore from "@/store";
 import Image from "next/image";
 import { useState, useRef } from "react";
@@ -11,21 +11,21 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-} from "@/app/order/(components)/carousel";
+} from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "@/app/order/(components)/dialog";
+} from "@/components/ui/dialog";
 import React from "react";
-import { AddButton } from "@/app/order/(components)/add-button";
+import AddButton from "@/components/ui/add-button";
 
 const AddImagePage = () => {
   const store = useFormDataStore();
   const formData = store.formData;
   const updateFormData = store.updateFormData;
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedImages, setSelectedImages] = useState<string[]>(formData.repairDetails?.images || []);
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
@@ -207,9 +207,8 @@ const AddImagePage = () => {
 
       <Button
         label="Fortsett"
-        link="/order/service-level"
-        prefetch
-        disabled={false}
+        link="/order/category"
+        className="w-full mt-6"
       />
     </>
   );

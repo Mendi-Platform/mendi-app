@@ -7,6 +7,7 @@ export interface FormData {
   mainCategory: MainCategory;
   description: string;
   repairDetails: RepairDetails;
+  price?: number;
 }
 
 export interface RepairDetails {
@@ -15,6 +16,10 @@ export interface RepairDetails {
   measurementMethod?: string;
   measurements?: string;
   images?: string[];
+  additionalDetails?: string;
+  email?: string;
+  city?: string;
+  detailsText?: string;
 }
 
 export enum TwoOptionType {
@@ -33,7 +38,8 @@ export enum Garment {
   LowerBody,
   DressAndSuit,
   OuterWear,
-  LeatherItems
+  LeatherItems,
+  Curtains
 }
 
 export enum Material {

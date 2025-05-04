@@ -49,6 +49,8 @@ export const getGarmentLabel = (garment: Garment): string => {
       return "Jakke/Yttertøy";
     case Garment.LeatherItems:
       return "Skinnplagg";
+    case Garment.Curtains:
+      return "Gardiner";
     default:
       return "";
   }

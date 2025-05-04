@@ -1,9 +1,12 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signupSchema } from "@/lib/validations/auth";
+import type { z } from "zod";
+import SignUpAction from "./signupAction";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,35 +17,25 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { z } from "zod";
-import SignUpAction from "./signupAction";
-import { Checkbox } from "@/components/ui/checkbox";
+type FormData = z.infer<typeof signupSchema>;
 
-export const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-});
-
-const SignUpPage = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export default function SignupPage() {
+  const form = useForm<FormData>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
-      firstName: "",
-      lastName: "",
+      name: "",
+      phone: "",
+      acceptTerms: false,
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    SignUpAction(values);
-  }
+  const onSubmit = async (data: FormData) => {
+    // Handle form submission
+    console.log(data);
+    SignUpAction(data);
+  };
 
   return (
     <>
@@ -79,7 +72,7 @@ const SignUpPage = () => {
           />
           <FormField
             control={form.control}
-            name="firstName"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Fornavn</FormLabel>
@@ -92,10 +85,10 @@ const SignUpPage = () => {
           />
           <FormField
             control={form.control}
-            name="lastName"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Etternavn</FormLabel>
+                <FormLabel>Telefon</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -103,12 +96,24 @@ const SignUpPage = () => {
               </FormItem>
             )}
           />
-          <Checkbox />
-          <Button type="submit">Submit</Button>
+          <FormField
+            control={form.control}
+            name="acceptTerms"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Registrer deg</Button>
         </form>
       </Form>
     </>
   );
-};
-
-export default SignUpPage;
+}

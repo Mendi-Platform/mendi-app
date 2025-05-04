@@ -1,7 +1,7 @@
 "use client";
 
 import CategoryCard from "@/components/ui/categoryCard";
-import Button from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/button";
 import { useState } from "react";
 import { Garment, Material, RepairType, Category, ServiceChoices, MainCategory, FormData } from "@/types/formData";
 import sweater from "@/app/assets/icons/sweater.png";
@@ -131,7 +131,7 @@ const CartPage = () => {
         <span className="text-base font-bold text-[#242424]">Subtotal <span className="text-xs font-normal text-[#797979]">inkl.mva.</span></span>
         <span className="text-base font-medium">{subtotal} kr</span>
       </div>
-      <Button label="Til kassen" link="/order/checkout" />
+      <LinkButton label="Til kassen" link="/order/checkout" />
     </div>
   );
 };

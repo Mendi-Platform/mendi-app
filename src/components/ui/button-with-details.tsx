@@ -78,14 +78,16 @@ const ButtonWithDetails = ({
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 items-center">
-            <span className="text-base font-semibold">{localInputValue}</span>
-            <button
-              onClick={handleEdit}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-white hover:bg-gray-100"
-            >
-              <Pencil size={16} />
-            </button>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold mb-2">{localInputValue}</span>
+            <div className="flex justify-start">
+              <button
+                onClick={handleEdit}
+                className="w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
           </div>
         )}
       </div>

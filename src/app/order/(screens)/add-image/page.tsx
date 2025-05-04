@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "../../../../components/ui/button";
+import { LinkButton } from "../../../../components/ui/button";
 import useFormDataStore from "@/store";
 import Image from "next/image";
 import { useState, useRef } from "react";
@@ -205,7 +205,7 @@ const AddImagePage = () => {
         </DialogContent>
       </Dialog>
 
-      <Button
+      <LinkButton
         label="Fortsett"
         link="/order/category"
         className="w-full mt-6"

@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import frontTop from "@/app/assets/icons/front-top.svg";
 import backTop from "@/app/assets/icons/back-top.svg";
-import Button from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/button";
 import TabSwitcher from "@/components/ui/TabSwitcher";
 
 const MarkDamagePage = () => {
@@ -60,7 +60,7 @@ const MarkDamagePage = () => {
           />
         ))}
       </div>
-      <Button label="Fortsett" link="/order/add-image" className="mt-6 w-full max-w-xs" />
+      <LinkButton label="Fortsett" link="/order/add-image" className="mt-6 w-full max-w-xs" />
     </div>
   );
 };

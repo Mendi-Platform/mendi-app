@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/button";
 import ButtonOption from "@/components/ui/buttonOption";
 import sweater from "@/app/assets/icons/sweater.png";
 import pants from "@/app/assets/icons/pants.png";
@@ -74,7 +74,7 @@ const GarmentPage = () => {
           />
         ))}
       </div>
-      <Button
+      <LinkButton
         label="Fortsett"
         link="/order/service"
         prefetch

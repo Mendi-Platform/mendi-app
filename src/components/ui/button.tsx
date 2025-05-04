@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
@@ -56,4 +57,33 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+interface LinkButtonProps {
+  label: string;
+  link: string;
+  disabled?: boolean;
+  prefetch?: boolean;
+  className?: string;
+}
+
+const LinkButton = ({ label, link, disabled, prefetch = false, className = "" }: LinkButtonProps) => {
+  return (
+    <Link
+      prefetch={prefetch}
+      onNavigate={(e) => {
+        if (disabled) {
+          e.preventDefault();
+        }
+      }}
+      className={`block w-full text-center py-2.5 rounded-[20px]  ${
+        disabled
+          ? "bg-white text-[#A7A7A7] border border-black/30 cursor-auto"
+          : "bg-[#006EFF] text-white"
+      } hover:opacity-70 text-xl font-semibold ${className}`}
+      href={link}
+    >
+      {label}
+    </Link>
+  );
+};
+
+export { Button, buttonVariants, LinkButton }

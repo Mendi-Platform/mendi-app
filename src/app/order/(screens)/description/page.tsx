@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "../../../../components/ui/button";
+import { LinkButton } from "../../../../components/ui/button";
 import useFormDataStore from "@/store";
 const OrderDescriptionPage = () => {
   const store = useFormDataStore();
@@ -33,7 +33,7 @@ const OrderDescriptionPage = () => {
         ></textarea>
       </div>
 
-      <Button label="Fortsett" link="/order/image-upload" prefetch />
+      <LinkButton label="Fortsett" link="/order/image-upload" prefetch />
     </>
   );
 };

@@ -20,6 +20,12 @@ export interface RepairDetails {
   email?: string;
   city?: string;
   detailsText?: string;
+  damageMarkers?: DamageMarkers;
+}
+
+export interface DamageMarkers {
+  front: { x: number; y: number }[];
+  back: { x: number; y: number }[];
 }
 
 export enum TwoOptionType {
@@ -36,7 +42,8 @@ export enum Garment {
   None,
   UpperBody,
   LowerBody,
-  DressAndSuit,
+  Kjole,
+  Dress,
   OuterWear,
   LeatherItems,
   Curtains

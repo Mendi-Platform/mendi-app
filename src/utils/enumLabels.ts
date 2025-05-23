@@ -43,8 +43,10 @@ export const getGarmentLabel = (garment: Garment): string => {
       return "Overdel";
     case Garment.LowerBody:
       return "Underdel";
-    case Garment.DressAndSuit:
-      return "Kjole/dress";
+    case Garment.Kjole:
+      return "Kjole";
+    case Garment.Dress:
+      return "Dress";
     case Garment.OuterWear:
       return "Jakke/Yttertøy";
     case Garment.LeatherItems:

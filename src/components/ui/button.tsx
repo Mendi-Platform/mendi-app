@@ -86,4 +86,21 @@ const LinkButton = ({ label, link, disabled, prefetch = false, className = "" }:
   );
 };
 
-export { Button, buttonVariants, LinkButton }
+interface UnderlineButtonProps {
+  label: string;
+  onClick: () => void;
+  className?: string;
+}
+
+const UnderlineButton = ({ label, onClick, className = "" }: UnderlineButtonProps) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-sm text-gray-600 hover:text-gray-800 underline ${className}`}
+    >
+      {label}
+    </button>
+  );
+};
+
+export { Button, buttonVariants, LinkButton, UnderlineButton }

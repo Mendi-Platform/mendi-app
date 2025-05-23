@@ -7,9 +7,10 @@ interface Props {
   onClick: () => void;
   subText?: string;
   price?: number;
+  priceText?: string;
 }
 
-const ButtonOption = ({ label, logo, active, onClick, subText, price }: Props) => {
+const ButtonOption = ({ label, logo, active, onClick, subText, price, priceText }: Props) => {
   return (
     <div
       onClick={onClick}
@@ -26,8 +27,10 @@ const ButtonOption = ({ label, logo, active, onClick, subText, price }: Props) =
           )}
         </div>
       </div>
-      {price !== undefined && (
-        <span className="text-base font-medium">{price} kr</span>
+      {(price !== undefined || priceText) && (
+        <span className="text-base font-medium">
+          {priceText || `${price} kr`}
+        </span>
       )}
     </div>
   );

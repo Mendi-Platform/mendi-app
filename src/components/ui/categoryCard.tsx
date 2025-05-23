@@ -1,12 +1,13 @@
 import Image, { StaticImageData } from "next/image";
 import { Pencil, Trash2 } from "lucide-react";
-import { FormData } from "@/types/formData";
+import { FormData, RepairType } from "@/types/formData";
 import { Badge } from "@/components/ui/badge";
 import {
   getRepairTypeLabel,
   getServiceLabel,
   getGarmentLabel,
 } from "@/utils/enumLabels";
+import DamageMarkerDisplay from "@/components/ui/damage-marker-display";
 
 interface Props {
   title: string;
@@ -86,6 +87,19 @@ const CategoryCard = ({
     </div>
   );
 
+  // Helper function to count damage markers - simplified
+  const getDamageMarkerSummary = (formData: FormData) => {
+    if (!formData.repairDetails?.damageMarkers) return null;
+    
+    const frontCount = formData.repairDetails.damageMarkers.front?.length || 0;
+    const backCount = formData.repairDetails.damageMarkers.back?.length || 0;
+    
+    if (frontCount === 0 && backCount === 0) return null;
+    
+    const totalCount = frontCount + backCount;
+    return `${totalCount} skade${totalCount > 1 ? 'r' : ''} markert`;
+  };
+
   return (
     <div
       onClick={onClick}
@@ -100,27 +114,76 @@ const CategoryCard = ({
             <>
               <hr className="my-4 border border-[#E5E5E5]" />
               <div className="mt-4">
-                <div className="text-xs text-[#7F7F7F] mb-1">Detaljer</div>
-                <div className="text-sm mb-4">
-                  {formData.repairDetails?.detailsText ? (
-                    <span>{formData.repairDetails.detailsText}</span>
-                  ) : (
-                    <>
-                      {formData.repairDetails?.option && (
-                        <span>{formData.repairDetails.option}</span>
+                <div className="flex flex-col gap-6">
+                  <div className="flex justify-between items-start">
+                    <InfoSection
+                      title="Plagg"
+                      value={getGarmentLabel(formData.garment)}
+                    />
+                    
+                    <InfoSection
+                      title="Tjeneste"
+                      value={formData.repairType ? getRepairTypeLabel(formData.repairType) : getServiceLabel(formData.service)}
+                      rightAlign
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      {formData.repairType === RepairType.Hole && 
+                       formData.repairDetails?.damageMarkers && 
+                       (formData.repairDetails.damageMarkers.front?.length > 0 || 
+                        formData.repairDetails.damageMarkers.back?.length > 0) ? (
+                        <>
+                          <InfoSection
+                            title="Markerte skader"
+                            value={getDamageMarkerSummary(formData)!}
+                          />
+                          <div className="mt-2 ml-0">
+                            <DamageMarkerDisplay 
+                              garment={formData.garment}
+                              damageMarkers={formData.repairDetails.damageMarkers}
+                              size="small"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        formData.repairDetails?.images && formData.repairDetails.images.length > 0 && (
+                          <>
+                            <InfoSection
+                              title="Bilder"
+                              value={`${formData.repairDetails.images.length} bilde${formData.repairDetails.images.length > 1 ? 'r' : ''}`}
+                            />
+                            <div className="mt-2 flex gap-2">
+                              {formData.repairDetails.images.map((img, idx) => (
+                                <Image
+                                  key={idx}
+                                  src={img}
+                                  alt={`Bilde ${idx + 1}`}
+                                  width={48}
+                                  height={48}
+                                  className="rounded object-cover border border-gray-200"
+                                />
+                              ))}
+                            </div>
+                          </>
+                        )
                       )}
-                      {formData.repairDetails?.quantity && (
-                        <span>{formData.repairDetails.quantity} stk</span>
-                      )}
-                      {!formData.repairDetails?.option && !formData.repairDetails?.quantity && (
-                        <span>Ingen detaljer</span>
-                      )}
-                    </>
-                  )}
+                    </div>
+                    
+                    <InfoSection
+                      title="Detaljer"
+                      value={formData.repairDetails?.detailsText || "Ingen detaljer"}
+                      rightAlign
+                    />
+                  </div>
                 </div>
-                {formData.repairDetails?.images && formData.repairDetails.images.length > 0 && (
-                  <>
-                    <div className="text-xs text-[#7F7F7F] mb-1">Bilder</div>
+                
+                {formData.repairType === RepairType.Hole && 
+                 formData.repairDetails?.images && 
+                 formData.repairDetails.images.length > 0 && (
+                  <div className="mt-6">
+                    <div className="text-xs text-[#7F7F7F] mb-2">Bilder</div>
                     <div className="flex gap-2 mb-4">
                       {formData.repairDetails.images.map((img, idx) => (
                         <Image
@@ -133,8 +196,9 @@ const CategoryCard = ({
                         />
                       ))}
                     </div>
-                  </>
+                  </div>
                 )}
+                
                 <ActionButtons onEdit={onEdit} onDelete={onDelete} />
               </div>
             </>
@@ -170,21 +234,90 @@ const CategoryCard = ({
           </div>
           {isActive && (
             <div className="flex flex-col gap-4 mt-4 border-t border-t-[#E5E5E5] pt-6">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-6">
-                <InfoSection
-                  title="Plagg"
-                  value={getGarmentLabel(formData.garment)}
-                />
-                <InfoSection
-                  title="Tjeneste"
-                  value={formData.repairType ? getRepairTypeLabel(formData.repairType) : getServiceLabel(formData.service)}
-                  rightAlign
-                />
-                <InfoSection
-                  title="Detaljer"
-                  value={formData.repairDetails?.detailsText || "Ingen detaljer"}
-                />
+              <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-start">
+                  <InfoSection
+                    title="Plagg"
+                    value={getGarmentLabel(formData.garment)}
+                  />
+                  
+                  <InfoSection
+                    title="Tjeneste"
+                    value={formData.repairType ? getRepairTypeLabel(formData.repairType) : getServiceLabel(formData.service)}
+                    rightAlign
+                  />
+                </div>
+                
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    {formData.repairType === RepairType.Hole && 
+                     formData.repairDetails?.damageMarkers && 
+                     (formData.repairDetails.damageMarkers.front?.length > 0 || 
+                      formData.repairDetails.damageMarkers.back?.length > 0) ? (
+                      <>
+                        <InfoSection
+                          title="Markerte skader"
+                          value={getDamageMarkerSummary(formData)!}
+                        />
+                        <div className="mt-2 ml-0">
+                          <DamageMarkerDisplay 
+                            garment={formData.garment}
+                            damageMarkers={formData.repairDetails.damageMarkers}
+                            size="small"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      formData.repairDetails?.images && formData.repairDetails.images.length > 0 && (
+                        <>
+                          <InfoSection
+                            title="Bilder"
+                            value={`${formData.repairDetails.images.length} bilde${formData.repairDetails.images.length > 1 ? 'r' : ''}`}
+                          />
+                          <div className="mt-2 flex gap-2">
+                            {formData.repairDetails.images.map((img, idx) => (
+                              <Image
+                                key={idx}
+                                src={img}
+                                alt={`Bilde ${idx + 1}`}
+                                width={48}
+                                height={48}
+                                className="rounded object-cover border border-gray-200"
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )
+                    )}
+                  </div>
+                  
+                  <InfoSection
+                    title="Detaljer"
+                    value={formData.repairDetails?.detailsText || "Ingen detaljer"}
+                    rightAlign
+                  />
+                </div>
               </div>
+              
+              {formData.repairType === RepairType.Hole && 
+               formData.repairDetails?.images && 
+               formData.repairDetails.images.length > 0 && (
+                <div className="mt-6">
+                  <div className="text-xs text-[#7F7F7F] mb-2">Bilder</div>
+                  <div className="flex gap-2 mb-4">
+                    {formData.repairDetails.images.map((img, idx) => (
+                      <Image
+                        key={idx}
+                        src={img}
+                        alt={`Bilde ${idx + 1}`}
+                        width={48}
+                        height={48}
+                        className="rounded object-cover border border-gray-200"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

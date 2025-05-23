@@ -5,11 +5,13 @@ import ButtonOption from "@/components/ui/buttonOption";
 import sweater from "@/app/assets/icons/sweater.png";
 import pants from "@/app/assets/icons/pants.png";
 import dress from "@/app/assets/icons/dress.png";
+import suit from "@/app/assets/icons/suit.png";
 import frakk from "@/app/assets/icons/frakk.png";
 import leather from "@/app/assets/icons/leather.svg";
 import curtains from "@/app/assets/icons/curtain.svg";
 import { Garment, Category } from "@/types/formData";
 import useFormDataStore from "@/store";
+import Image from "next/image";
 
 const garmentList = [
   {
@@ -23,9 +25,14 @@ const garmentList = [
     logo: pants,
   },
   {
-    label: "Kjole/dress",
-    value: Garment.DressAndSuit,
+    label: "Kjole",
+    value: Garment.Kjole,
     logo: dress,
+  },
+  {
+    label: "Dress",
+    value: Garment.Dress,
+    logo: suit,
   },
   {
     label: "Jakke/Yttertøy",

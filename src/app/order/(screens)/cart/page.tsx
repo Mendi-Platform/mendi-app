@@ -7,6 +7,7 @@ import { Garment, Material, RepairType, Category, ServiceChoices, MainCategory, 
 import sweater from "@/app/assets/icons/sweater.png";
 import pants from "@/app/assets/icons/pants.png";
 import dress from "@/app/assets/icons/dress.png";
+import suit from "@/app/assets/icons/suit.png";
 import frakk from "@/app/assets/icons/frakk.png";
 import leather from "@/app/assets/icons/leather.svg";
 import curtains from "@/app/assets/icons/curtain.svg";
@@ -43,8 +44,10 @@ const getLogo = (garment: number) => {
       return sweater;
     case Garment.LowerBody:
       return pants;
-    case Garment.DressAndSuit:
+    case Garment.Kjole:
       return dress;
+    case Garment.Dress:
+      return suit;
     case Garment.OuterWear:
       return frakk;
     case Garment.LeatherItems:
@@ -131,7 +134,7 @@ const CartPage = () => {
         <span className="text-base font-bold text-[#242424]">Subtotal <span className="text-xs font-normal text-[#797979]">inkl.mva.</span></span>
         <span className="text-base font-medium">{subtotal} kr</span>
       </div>
-      <LinkButton label="Til kassen" link="/order/checkout" />
+      <LinkButton label="Til kassen" link="/order/address-form" />
     </div>
   );
 };

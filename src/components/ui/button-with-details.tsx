@@ -104,9 +104,9 @@ const ButtonWithDetails = ({
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         ${className}`}
     >
-      <div className="flex items-center gap-3 w-full">
+      <div className="flex items-center gap-3 flex-1">
         {logo && <IconWrapper icon={logo} />}
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col flex-1">
           <span className="text-base font-medium">{label}</span>
           {active && subText && variant !== "input" && (
             <span className="text-sm text-[#797979]">{subText}</span>
@@ -115,7 +115,7 @@ const ButtonWithDetails = ({
         </div>
       </div>
       {price !== undefined && (
-        <span className="text-base font-medium">{price} kr</span>
+        <span className="text-base font-medium whitespace-nowrap ml-4">{price} kr</span>
       )}
     </button>
   );

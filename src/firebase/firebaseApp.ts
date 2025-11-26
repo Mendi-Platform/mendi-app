@@ -4,7 +4,6 @@ import { initializeApp } from 'firebase/app';
 const firebaseConfig = {
     apiKey: "AIzaSyBTxaebT1bI9RTIF9FoERNcXw4ksXIfBOk",
     authDomain: "lappe-dev-b1d8f.firebaseapp.com",
-    /* databaseURL: "https://my-app.firebaseio.com", */
     projectId: "lappe-dev-b1d8f",
     storageBucket: "lappe-dev-b1d8f.appspot.com",
     messagingSenderId: "266219936303",

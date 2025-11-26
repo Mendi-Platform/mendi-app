@@ -1,14 +1,29 @@
 import React from 'react';
+import { COLORS } from '@/constants/colors';
 
 interface StepperProps {
   steps: string[];
   currentStep: number;
   className?: string;
+  variant?: 'horizontal' | 'vertical';
 }
 
-const Stepper: React.FC<StepperProps> = ({ steps, currentStep, className = "" }) => {
+const Stepper: React.FC<StepperProps> = ({
+  steps,
+  currentStep,
+  className = "",
+  variant = 'horizontal'
+}) => {
+  const isVertical = variant === 'vertical';
+
   return (
-    <div className={`flex items-center justify-between w-full ${className}`}>
+    <div
+      className={`
+        flex w-full
+        ${isVertical ? 'flex-col gap-4' : 'items-center justify-between'}
+        ${className}
+      `}
+    >
       {steps.map((step, index) => {
         const stepNumber = index + 1;
         const isActive = stepNumber === currentStep;
@@ -17,18 +32,15 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep, className = "" })
 
         return (
           <React.Fragment key={index}>
-            <div className="flex flex-col items-center">
+            <div className={`flex ${isVertical ? 'items-center gap-3' : 'flex-col items-center'}`}>
               {/* Step circle */}
               <div
-                className={`
-                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                  ${isCompleted 
-                    ? 'bg-[#006EFF] text-white' 
-                    : isActive 
-                    ? 'bg-[#006EFF] text-white' 
-                    : 'bg-[#F5F5F5] text-[#A7A7A7] border border-[#E5E5E5]'
-                  }
-                `}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
+                style={{
+                  backgroundColor: isCompleted || isActive ? COLORS.primary : COLORS.bgInactive,
+                  color: isCompleted || isActive ? 'white' : COLORS.textDisabled,
+                  border: !isCompleted && !isActive ? `1px solid ${COLORS.border}` : 'none',
+                }}
               >
                 {isCompleted ? (
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -38,30 +50,35 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep, className = "" })
                   stepNumber
                 )}
               </div>
-              
+
               {/* Step label */}
-              <span 
+              <span
                 className={`
-                  mt-2 text-xs text-center
-                  ${isActive 
-                    ? 'text-[#006EFF] font-bold' 
-                    : isCompleted 
-                    ? 'text-[#006EFF] font-medium' 
-                    : 'text-[#A7A7A7] font-medium'
-                  }
+                  text-xs text-center transition-colors
+                  ${isVertical ? '' : 'mt-2'}
+                  ${isActive ? 'font-bold' : 'font-medium'}
                 `}
+                style={{
+                  color: isActive || isCompleted ? COLORS.primary : COLORS.textDisabled,
+                }}
               >
                 {step}
               </span>
             </div>
-            
+
             {/* Connector line */}
             {!isLast && (
-              <div 
+              <div
                 className={`
-                  flex-1 h-0.5 mx-2 mt-[-16px]
-                  ${stepNumber < currentStep ? 'bg-[#006EFF]' : 'bg-[#E5E5E5]'}
+                  transition-colors
+                  ${isVertical
+                    ? 'w-0.5 h-6 ml-4'
+                    : 'flex-1 h-0.5 mx-2 mt-[-16px]'
+                  }
                 `}
+                style={{
+                  backgroundColor: stepNumber < currentStep ? COLORS.primary : COLORS.border,
+                }}
               />
             )}
           </React.Fragment>

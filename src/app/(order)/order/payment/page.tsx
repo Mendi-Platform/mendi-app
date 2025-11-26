@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   getStoreLocations,
   getPostenOptions,
@@ -6,6 +7,11 @@ import {
   getSiteSettings,
 } from "@/sanity/lib/queries";
 import PaymentPageClient from "./PaymentPageClient";
+
+export const metadata: Metadata = {
+  title: "Betaling",
+  description: "Fullfør bestillingen din med trygg betaling",
+};
 
 export default async function PaymentPage() {
   // Fetch all data from Sanity in parallel

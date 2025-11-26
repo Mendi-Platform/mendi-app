@@ -4,7 +4,41 @@ import React from 'react';
 import Stepper from '@/components/ui/stepper';
 import { COLORS } from '@/constants/colors';
 import { useCart } from '@/contexts/CartContext';
-import { getRepairTypeLabel, getGarmentLabel } from '@/utils/enumLabels';
+import type { GarmentSlug, RepairTypeSlug } from '@/types/formData';
+
+// Helper to get garment label from slug
+const getGarmentLabelFromSlug = (slug: GarmentSlug | undefined): string => {
+  if (!slug) return '';
+  const labels: Record<GarmentSlug, string> = {
+    '': '',
+    'upper-body': 'Overdel',
+    'lower-body': 'Underdel',
+    'kjole': 'Kjole',
+    'dress': 'Dress',
+    'outer-wear': 'Jakke/Yttertøy',
+    'leather-items': 'Skinnplagg',
+    'curtains': 'Gardiner',
+  };
+  return labels[slug] || '';
+};
+
+// Helper to get repair type label from slug
+const getRepairTypeLabelFromSlug = (slug: RepairTypeSlug | undefined): string => {
+  if (!slug) return '';
+  const labels: Record<RepairTypeSlug, string> = {
+    '': '',
+    'replace-zipper': 'Bytte glidelås',
+    'sew-button': 'Sy på ny knapp',
+    'hole': 'Hull',
+    'small-hole': 'Lite hull',
+    'big-hole': 'Stort hull',
+    'belt-loops': 'Fest på beltehemper',
+    'hemming': 'Legge opp',
+    'adjust-waist': 'Ta inn i livet',
+    'other-request': 'Annen forespørsel',
+  };
+  return labels[slug] || '';
+};
 
 interface CheckoutWizardProps {
   children: React.ReactNode;
@@ -28,8 +62,8 @@ const CheckoutWizard: React.FC<CheckoutWizardProps> = ({
   // Static cart item (same as in cart page)
   const staticCartItem = {
     id: 'static-1',
-    repairType: 1,
-    garment: 1,
+    repairTypeSlug: 'hemming' as RepairTypeSlug,
+    garmentSlug: 'upper-body' as GarmentSlug,
     price: 199,
   };
 
@@ -64,7 +98,7 @@ const CheckoutWizard: React.FC<CheckoutWizardProps> = ({
               {allItems.map((item, index) => (
                 <div key={index} className="flex justify-between items-start text-sm">
                   <span className="text-gray-600 flex-1 pr-4">
-                    {getRepairTypeLabel(item.repairType)} - {getGarmentLabel(item.garment)}
+                    {getRepairTypeLabelFromSlug(item.repairTypeSlug)} - {getGarmentLabelFromSlug(item.garmentSlug)}
                   </span>
                   <span className="font-medium whitespace-nowrap">{item.price} kr</span>
                 </div>

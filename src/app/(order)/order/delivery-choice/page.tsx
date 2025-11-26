@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   getStoreLocations,
   getPostenOptions,
@@ -6,6 +7,11 @@ import {
   getSiteSettings,
 } from "@/sanity/lib/queries";
 import DeliveryChoiceClient from "./DeliveryChoiceClient";
+
+export const metadata: Metadata = {
+  title: "Leveringsvalg",
+  description: "Velg hvordan du vil levere og hente plagget ditt",
+};
 
 export default async function DeliveryChoicePage() {
   // Fetch all data from Sanity in parallel

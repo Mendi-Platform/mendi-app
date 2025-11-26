@@ -15,30 +15,33 @@ import backCoat from "@/app/assets/icons/mark-damage/back-coat.svg";
 import { LinkButton } from "@/components/ui/button";
 import TabSwitcher from "@/components/ui/TabSwitcher";
 import { useCart } from "@/contexts/CartContext";
-import { Garment, DamageMarkers } from "@/types/formData";
+import type { DamageMarkers, GarmentSlug } from "@/types/formData";
 import { useRouter } from "next/navigation";
 
-const garmentImages = {
-  [Garment.UpperBody]: {
+const garmentImages: Record<GarmentSlug, { front: string; back: string } | undefined> = {
+  '': undefined,
+  'upper-body': {
     front: frontTop,
     back: backTop,
   },
-  [Garment.LowerBody]: {
+  'lower-body': {
     front: frontBottom,
     back: backBottom,
   },
-  [Garment.Kjole]: {
+  'kjole': {
     front: frontDress,
     back: backDress,
   },
-  [Garment.Dress]: {
+  'dress': {
     front: frontSuit,
     back: backSuit,
   },
-  [Garment.OuterWear]: {
+  'outer-wear': {
     front: frontCoat,
     back: backCoat,
   },
+  'leather-items': undefined,
+  'curtains': undefined,
 };
 
 const MarkDamagePage = () => {
@@ -60,13 +63,13 @@ const MarkDamagePage = () => {
   // Redirect logic - only after hydration
   useEffect(() => {
     if (isHydrated) {
-      if (formData.garment === Garment.LeatherItems || formData.garment === Garment.Curtains) {
+      if (formData.garmentSlug === 'leather-items' || formData.garmentSlug === 'curtains') {
         router.replace('/order/additional-details');
-      } else if (formData.garment === Garment.None) {
+      } else if (formData.garmentSlug === '') {
         router.replace('/order/garment');
       }
     }
-  }, [formData.garment, router, isHydrated]);
+  }, [formData.garmentSlug, router, isHydrated]);
 
   // Function to save markers to state
   const saveMarkersToState = (newMarkers: DamageMarkers) => {
@@ -129,7 +132,7 @@ const MarkDamagePage = () => {
   }
 
   const hasMarkers = markers[view].length > 0;
-  const currentGarment = garmentImages[formData.garment as keyof typeof garmentImages];
+  const currentGarment = garmentImages[formData.garmentSlug];
 
   // Hvis currentGarment er undefined, vis loading (redirect vil håndtere dette)
   if (!currentGarment) {
@@ -163,7 +166,7 @@ const MarkDamagePage = () => {
         >
           <Image
             src={currentGarment[view]}
-            alt={`${formData.garment} ${view}`}
+            alt={`${formData.garmentSlug} ${view}`}
             width={200}
             height={300}
             style={{ width: '100%', height: '100%', objectFit: 'contain' }}

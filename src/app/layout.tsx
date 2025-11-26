@@ -9,8 +9,25 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mendi",
+  title: {
+    default: "Mendi",
+    template: "%s | Mendi",
+  },
   description: "Mendi – Enkel reparasjon og tilpasning av klær i hele Norge",
+  keywords: ["reparasjon", "klær", "søm", "tilpasning", "Norge", "skredder"],
+  authors: [{ name: "Mendi" }],
+  creator: "Mendi",
+  openGraph: {
+    type: "website",
+    locale: "nb_NO",
+    siteName: "Mendi",
+    title: "Mendi",
+    description: "Enkel reparasjon og tilpasning av klær i hele Norge",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -19,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="nb">
       <body className={`${inter.variable} antialiased`}>
         <ToastProvider>
           {children}

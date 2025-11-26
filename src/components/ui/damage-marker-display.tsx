@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Garment, DamageMarkers } from "@/types/formData";
+import type { GarmentSlug, DamageMarkers } from "@/types/formData";
 import frontTop from "@/app/assets/icons/mark-damage/front-top.svg";
 import backTop from "@/app/assets/icons/mark-damage/back-top.svg";
 import frontBottom from "@/app/assets/icons/mark-damage/front-bottom.svg";
@@ -13,41 +13,44 @@ import backSuit from "@/app/assets/icons/mark-damage/back-suit.svg";
 import frontCoat from "@/app/assets/icons/mark-damage/front-coat.svg";
 import backCoat from "@/app/assets/icons/mark-damage/back-coat.svg";
 
-const garmentImages = {
-  [Garment.UpperBody]: {
+const garmentImages: Record<GarmentSlug, { front: typeof frontTop; back: typeof backTop } | undefined> = {
+  '': undefined,
+  'upper-body': {
     front: frontTop,
     back: backTop,
   },
-  [Garment.LowerBody]: {
+  'lower-body': {
     front: frontBottom,
     back: backBottom,
   },
-  [Garment.Kjole]: {
+  'kjole': {
     front: frontDress,
     back: backDress,
   },
-  [Garment.Dress]: {
+  'dress': {
     front: frontSuit,
     back: backSuit,
   },
-  [Garment.OuterWear]: {
+  'outer-wear': {
     front: frontCoat,
     back: backCoat,
   },
+  'leather-items': undefined,
+  'curtains': undefined,
 };
 
 interface DamageMarkerDisplayProps {
-  garment: Garment;
+  garmentSlug: GarmentSlug;
   damageMarkers: DamageMarkers;
   size?: "small" | "medium" | "large";
 }
 
-const DamageMarkerDisplay = ({ 
-  garment, 
-  damageMarkers, 
-  size = "small" 
+const DamageMarkerDisplay = ({
+  garmentSlug,
+  damageMarkers,
+  size = "small"
 }: DamageMarkerDisplayProps) => {
-  const currentGarment = garmentImages[garment as keyof typeof garmentImages];
+  const currentGarment = garmentImages[garmentSlug];
   
   if (!currentGarment || !damageMarkers) {
     return null;

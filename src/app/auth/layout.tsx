@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { verifySession } from "@/lib/dal";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Logg inn",
+  description: "Logg inn eller opprett en Mendi-konto",
+};
 
 export default async function AuthLayout({
   children,

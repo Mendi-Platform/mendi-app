@@ -1,7 +1,6 @@
 "use client";
 
 import ButtonWithDetails from "@/components/ui/button-with-details";
-import { RepairType } from "@/types/formData";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -31,10 +30,10 @@ const MeasurementPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (formData.repairType !== RepairType.Hemming && formData.repairType !== RepairType.AdjustWaist) {
+    if (formData.repairTypeSlug !== 'hemming' && formData.repairTypeSlug !== 'adjust-waist') {
       router.replace('/order/service');
     }
-  }, [formData.repairType, router]);
+  }, [formData.repairTypeSlug, router]);
 
   const onChoice = (value: string) => {
     if (formData.repairDetails?.measurementMethod === value) return;

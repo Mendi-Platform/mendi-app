@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/app/assets/logo/mendi-app.svg";
-import { verifySession } from "@/lib/dal";
 import questionIcon from "@/app/assets/icons/question-icon.svg";
 import cartIcon from "@/app/assets/icons/cart-icon.svg";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -13,10 +12,7 @@ export default async function OrderLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [session, siteSettings] = await Promise.all([
-    verifySession(),
-    getSiteSettings(),
-  ]);
+  const siteSettings = await getSiteSettings();
 
   // CSS custom properties for colors from Sanity
   const colorStyles = siteSettings ? {

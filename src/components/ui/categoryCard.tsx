@@ -1,13 +1,61 @@
 import Image, { StaticImageData } from "next/image";
 import { Pencil, Trash2 } from "lucide-react";
-import { FormData, RepairType } from "@/types/formData";
+import type { FormData, GarmentSlug, RepairTypeSlug, ServiceSlug, CategorySlug } from "@/types/formData";
 import { Badge } from "@/components/ui/badge";
-import {
-  getRepairTypeLabel,
-  getServiceLabel,
-  getGarmentLabel,
-} from "@/utils/enumLabels";
 import DamageMarkerDisplay from "@/components/ui/damage-marker-display";
+
+// Helper functions to get labels from slugs
+const getRepairTypeLabelFromSlug = (slug: RepairTypeSlug | undefined): string => {
+  if (!slug) return '';
+  const labels: Record<RepairTypeSlug, string> = {
+    '': '',
+    'replace-zipper': 'Bytte glidelås',
+    'sew-button': 'Sy på ny knapp',
+    'hole': 'Hull',
+    'small-hole': 'Lite hull',
+    'big-hole': 'Stort hull',
+    'belt-loops': 'Fest på beltehemper',
+    'hemming': 'Legge opp',
+    'adjust-waist': 'Ta inn i livet',
+    'other-request': 'Annen forespørsel',
+  };
+  return labels[slug] || '';
+};
+
+const getGarmentLabelFromSlug = (slug: GarmentSlug | undefined): string => {
+  if (!slug) return '';
+  const labels: Record<GarmentSlug, string> = {
+    '': '',
+    'upper-body': 'Overdel',
+    'lower-body': 'Underdel',
+    'kjole': 'Kjole',
+    'dress': 'Dress',
+    'outer-wear': 'Jakke/Yttertøy',
+    'leather-items': 'Skinnplagg',
+    'curtains': 'Gardiner',
+  };
+  return labels[slug] || '';
+};
+
+const getServiceLabelFromSlug = (slug: ServiceSlug | undefined): string => {
+  if (!slug) return '';
+  const labels: Record<ServiceSlug, string> = {
+    '': '',
+    'repair': 'Reparasjon',
+    'adjustment': 'Tilpasning',
+  };
+  return labels[slug] || '';
+};
+
+const getCategoryLabelFromSlug = (slug: CategorySlug | undefined): string => {
+  if (!slug) return '';
+  const labels: Record<CategorySlug, string> = {
+    '': '',
+    'premium': 'Premium',
+    'standard': 'Standard',
+  };
+  return labels[slug] || '';
+};
 
 interface Props {
   title: string;
@@ -64,17 +112,17 @@ const CategoryCard = ({
         <div>
           <div className="font-semibold text-base">
             {variant === "cart"
-              ? getRepairTypeLabel(formData.repairType)
+              ? getRepairTypeLabelFromSlug(formData.repairTypeSlug)
               : title}
           </div>
           <div className="font-semibold text-sm">
             {variant === "cart"
-              ? getGarmentLabel(formData.garment)
+              ? getGarmentLabelFromSlug(formData.garmentSlug)
               : "Item"}
           </div>
           <div className="text-sm">
             {variant === "cart"
-              ? (formData.category === 2 ? "Standard" : formData.category === 1 ? "Premium" : "")
+              ? getCategoryLabelFromSlug(formData.categorySlug)
               : "Plan"}
           </div>
         </div>
@@ -118,21 +166,21 @@ const CategoryCard = ({
                   <div className="flex justify-between items-start">
                     <InfoSection
                       title="Plagg"
-                      value={getGarmentLabel(formData.garment)}
+                      value={getGarmentLabelFromSlug(formData.garmentSlug)}
                     />
-                    
+
                     <InfoSection
                       title="Tjeneste"
-                      value={formData.repairType ? getRepairTypeLabel(formData.repairType) : getServiceLabel(formData.service)}
+                      value={formData.repairTypeSlug ? getRepairTypeLabelFromSlug(formData.repairTypeSlug) : getServiceLabelFromSlug(formData.serviceSlug)}
                       rightAlign
                     />
                   </div>
-                  
+
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
-                      {formData.repairType === RepairType.Hole && 
-                       formData.repairDetails?.damageMarkers && 
-                       (formData.repairDetails.damageMarkers.front?.length > 0 || 
+                      {formData.repairTypeSlug === 'hole' &&
+                       formData.repairDetails?.damageMarkers &&
+                       (formData.repairDetails.damageMarkers.front?.length > 0 ||
                         formData.repairDetails.damageMarkers.back?.length > 0) ? (
                         <>
                           <InfoSection
@@ -140,8 +188,8 @@ const CategoryCard = ({
                             value={getDamageMarkerSummary(formData)!}
                           />
                           <div className="mt-2 ml-0">
-                            <DamageMarkerDisplay 
-                              garment={formData.garment}
+                            <DamageMarkerDisplay
+                              garmentSlug={formData.garmentSlug}
                               damageMarkers={formData.repairDetails.damageMarkers}
                               size="small"
                             />
@@ -170,7 +218,7 @@ const CategoryCard = ({
                         )
                       )}
                     </div>
-                    
+
                     <InfoSection
                       title="Detaljer"
                       value={formData.repairDetails?.detailsText || "Ingen detaljer"}
@@ -178,9 +226,9 @@ const CategoryCard = ({
                     />
                   </div>
                 </div>
-                
-                {formData.repairType === RepairType.Hole && 
-                 formData.repairDetails?.images && 
+
+                {formData.repairTypeSlug === 'hole' &&
+                 formData.repairDetails?.images &&
                  formData.repairDetails.images.length > 0 && (
                   <div className="mt-6">
                     <div className="text-xs text-[#7F7F7F] mb-2">Bilder</div>
@@ -238,21 +286,21 @@ const CategoryCard = ({
                 <div className="flex justify-between items-start">
                   <InfoSection
                     title="Plagg"
-                    value={getGarmentLabel(formData.garment)}
+                    value={getGarmentLabelFromSlug(formData.garmentSlug)}
                   />
-                  
+
                   <InfoSection
                     title="Tjeneste"
-                    value={formData.repairType ? getRepairTypeLabel(formData.repairType) : getServiceLabel(formData.service)}
+                    value={formData.repairTypeSlug ? getRepairTypeLabelFromSlug(formData.repairTypeSlug) : getServiceLabelFromSlug(formData.serviceSlug)}
                     rightAlign
                   />
                 </div>
-                
+
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col">
-                    {formData.repairType === RepairType.Hole && 
-                     formData.repairDetails?.damageMarkers && 
-                     (formData.repairDetails.damageMarkers.front?.length > 0 || 
+                    {formData.repairTypeSlug === 'hole' &&
+                     formData.repairDetails?.damageMarkers &&
+                     (formData.repairDetails.damageMarkers.front?.length > 0 ||
                       formData.repairDetails.damageMarkers.back?.length > 0) ? (
                       <>
                         <InfoSection
@@ -260,8 +308,8 @@ const CategoryCard = ({
                           value={getDamageMarkerSummary(formData)!}
                         />
                         <div className="mt-2 ml-0">
-                          <DamageMarkerDisplay 
-                            garment={formData.garment}
+                          <DamageMarkerDisplay
+                            garmentSlug={formData.garmentSlug}
                             damageMarkers={formData.repairDetails.damageMarkers}
                             size="small"
                           />
@@ -290,7 +338,7 @@ const CategoryCard = ({
                       )
                     )}
                   </div>
-                  
+
                   <InfoSection
                     title="Detaljer"
                     value={formData.repairDetails?.detailsText || "Ingen detaljer"}
@@ -298,9 +346,9 @@ const CategoryCard = ({
                   />
                 </div>
               </div>
-              
-              {formData.repairType === RepairType.Hole && 
-               formData.repairDetails?.images && 
+
+              {formData.repairTypeSlug === 'hole' &&
+               formData.repairDetails?.images &&
                formData.repairDetails.images.length > 0 && (
                 <div className="mt-6">
                   <div className="text-xs text-[#7F7F7F] mb-2">Bilder</div>

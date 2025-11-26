@@ -1,86 +1,85 @@
 "use client";
 
 import ButtonWithDetails from "@/components/ui/button-with-details";
-import { RepairType, TwoOptionType } from "@/types/formData";
+import type { RepairTypeSlug, TwoOptionSlug } from "@/types/formData";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Category } from "@/types/formData";
 
 interface OptionConfig {
   title: string;
   options: {
     label: string;
-    value: string;
+    value: TwoOptionSlug;
     subText?: string;
     price: number;
   }[];
 }
 
-const optionConfigs: Partial<Record<RepairType, OptionConfig>> = {
-  [RepairType.ReplaceZipper]: {
+const optionConfigs: Partial<Record<RepairTypeSlug, OptionConfig>> = {
+  'replace-zipper': {
     title: "Hvor lang er glidelåsen?",
     options: [
       {
         label: "Kort",
-        value: TwoOptionType.Short,
+        value: 'short',
         subText: "Opptil 30 cm",
         price: 399,
       },
       {
         label: "Lang",
-        value: TwoOptionType.Long,
+        value: 'long',
         subText: "Lengre enn 30 cm",
         price: 599,
       },
     ],
   },
-  [RepairType.Hole]: {
+  'hole': {
     title: "Hvor stort er hullet?",
     options: [
       {
         label: "Liten",
-        value: TwoOptionType.Small,
+        value: 'small',
         subText: "Mindre enn en 5-kroner",
         price: 199,
       },
       {
         label: "Stor",
-        value: TwoOptionType.Big,
+        value: 'big',
         subText: "Større enn en 5-kroner",
         price: 299,
       },
     ],
   },
-  [RepairType.Hemming]: {
+  'hemming': {
     title: "Hvor mange lag har plagget?",
     options: [
       {
         label: "Ett lag",
-        value: TwoOptionType.SingleLayer,
+        value: 'single',
         subText: "Enkel tilspaning",
         price: 399,
       },
       {
         label: "Flere lag",
-        value: TwoOptionType.MultipleLayers,
+        value: 'multiple',
         subText: "Krever litt mer tid",
         price: 499,
       },
     ],
   },
-  [RepairType.AdjustWaist]: {
+  'adjust-waist': {
     title: "Hvor mange lag skal tas inn?",
     options: [
       {
         label: "Ett lag",
-        value: TwoOptionType.SingleLayer,
+        value: 'single',
         subText: "Enkel tilspaning",
         price: 299,
       },
       {
         label: "To lag",
-        value: TwoOptionType.MultipleLayers,
+        value: 'multiple',
         subText: "Krever litt mer tid",
         price: 399,
       },
@@ -93,21 +92,21 @@ const TwoOptionPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (formData.repairType === RepairType.None) {
+    if (formData.repairTypeSlug === '') {
       router.replace('/order/service');
     }
-  }, [formData.repairType, router]);
+  }, [formData.repairTypeSlug, router]);
 
-  const config = optionConfigs[formData.repairType];
+  const config = optionConfigs[formData.repairTypeSlug];
 
-  const onChoice = (option: string) => {
+  const onChoice = (option: TwoOptionSlug) => {
     if (!config) return;
     const selected = config.options.find(o => o.value === option);
     if (!selected) return;
 
     // Calculate price based on category
     let finalPrice = selected.price;
-    if (formData.category === Category.Premium) {
+    if (formData.categorySlug === 'premium') {
       finalPrice += 100; // Premium adds 100kr to base price
     }
 
@@ -123,9 +122,9 @@ const TwoOptionPage = () => {
   };
 
   const handleContinue = () => {
-    if (formData.repairType === RepairType.Hole) {
+    if (formData.repairTypeSlug === 'hole') {
       router.push("/order/mark-damage");
-    } else if (formData.repairType === RepairType.Hemming || formData.repairType === RepairType.AdjustWaist) {
+    } else if (formData.repairTypeSlug === 'hemming' || formData.repairTypeSlug === 'adjust-waist') {
       router.push("/order/measurement");
     } else {
       router.push("/order/add-image");

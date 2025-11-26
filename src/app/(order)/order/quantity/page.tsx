@@ -1,6 +1,6 @@
 "use client";
 
-import { RepairType } from "@/types/formData";
+import type { RepairTypeSlug } from "@/types/formData";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 
@@ -9,12 +9,12 @@ interface QuantityConfig {
   pricePerUnit: number;
 }
 
-const quantityConfigs: Partial<Record<RepairType, QuantityConfig>> = {
-  [RepairType.SewButton]: {
+const quantityConfigs: Partial<Record<RepairTypeSlug, QuantityConfig>> = {
+  'sew-button': {
     title: "Hvor mange knapper skal sys på?",
     pricePerUnit: 99,
   },
-  [RepairType.BeltLoops]: {
+  'belt-loops': {
     title: "Hvor mange beltehemper skal festes?",
     pricePerUnit: 0,
   },
@@ -24,7 +24,7 @@ const QuantityPage = () => {
   const { formData, updateFormData } = useCart();
   const router = useRouter();
 
-  const config = quantityConfigs[formData.repairType];
+  const config = quantityConfigs[formData.repairTypeSlug];
   const quantity = formData.repairDetails?.quantity || 1;
 
   const getBeltLoopPrice = (qty: number) => {
@@ -34,7 +34,7 @@ const QuantityPage = () => {
   };
 
   const getPrice = (qty: number) => {
-    if (formData.repairType === RepairType.BeltLoops) {
+    if (formData.repairTypeSlug === 'belt-loops') {
       return getBeltLoopPrice(qty);
     }
     return qty * (config?.pricePerUnit || 0);
@@ -42,11 +42,11 @@ const QuantityPage = () => {
 
   const updateQuantity = (newQuantity: number) => {
     if (newQuantity < 1) return;
-    if (formData.repairType === RepairType.BeltLoops && newQuantity > 5) return;
+    if (formData.repairTypeSlug === 'belt-loops' && newQuantity > 5) return;
     let detailsText = '';
-    if (formData.repairType === RepairType.SewButton) {
+    if (formData.repairTypeSlug === 'sew-button') {
       detailsText = `Antall knapper: ${newQuantity}`;
-    } else if (formData.repairType === RepairType.BeltLoops) {
+    } else if (formData.repairTypeSlug === 'belt-loops') {
       detailsText = `Antall beltehemper: ${newQuantity}`;
     }
     updateFormData({
@@ -87,7 +87,7 @@ const QuantityPage = () => {
         <button
           onClick={() => updateQuantity(quantity + 1)}
           className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
-            (formData.repairType === RepairType.BeltLoops && quantity >= 5)
+            (formData.repairTypeSlug === 'belt-loops' && quantity >= 5)
               ? "bg-[#FAFAFA] border border-[#7A7A7A] border-opacity-[0.34]"
               : "bg-[#006EFF] text-white"
           }`}
@@ -98,7 +98,7 @@ const QuantityPage = () => {
       <div className="bg-[#E3EEFF] rounded-lg py-2 px-6 mb-14 flex flex-col items-center">
         <span className="text-2xl">{getPrice(quantity)} kr</span>
         <span className="text-sm text-[#797979]">
-          {formData.repairType === RepairType.BeltLoops
+          {formData.repairTypeSlug === 'belt-loops'
             ? quantity <= 2
               ? "Opptil 2 beltehemper"
               : "Opptil 5 beltehemper"

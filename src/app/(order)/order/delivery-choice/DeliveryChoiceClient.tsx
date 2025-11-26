@@ -17,6 +17,41 @@ import type {
 } from "@/sanity/lib/types";
 import { getLocalizedValue, getLocalizedArray } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import type { GarmentSlug, RepairTypeSlug } from "@/types/formData";
+
+// Helper to get garment label from slug
+const getGarmentLabelFromSlug = (slug: GarmentSlug | undefined, lang: 'nb' | 'en'): string => {
+  if (!slug) return '';
+  const labels: Record<GarmentSlug, { nb: string; en: string }> = {
+    '': { nb: '', en: '' },
+    'upper-body': { nb: 'Overdel', en: 'Upper body' },
+    'lower-body': { nb: 'Underdel', en: 'Lower body' },
+    'kjole': { nb: 'Kjole', en: 'Dress' },
+    'dress': { nb: 'Dress', en: 'Suit' },
+    'outer-wear': { nb: 'Jakke/Yttertøy', en: 'Jacket/Outerwear' },
+    'leather-items': { nb: 'Skinnplagg', en: 'Leather items' },
+    'curtains': { nb: 'Gardiner', en: 'Curtains' },
+  };
+  return labels[slug]?.[lang] || '';
+};
+
+// Helper to get repair type label from slug
+const getRepairTypeLabelFromSlug = (slug: RepairTypeSlug | undefined, lang: 'nb' | 'en'): string => {
+  if (!slug) return '';
+  const labels: Record<RepairTypeSlug, { nb: string; en: string }> = {
+    '': { nb: '', en: '' },
+    'replace-zipper': { nb: 'Bytte glidelås', en: 'Replace zipper' },
+    'sew-button': { nb: 'Sy på ny knapp', en: 'Sew button' },
+    'hole': { nb: 'Hull', en: 'Hole' },
+    'small-hole': { nb: 'Lite hull', en: 'Small hole' },
+    'big-hole': { nb: 'Stort hull', en: 'Big hole' },
+    'belt-loops': { nb: 'Fest på beltehemper', en: 'Belt loops' },
+    'hemming': { nb: 'Legge opp', en: 'Hemming' },
+    'adjust-waist': { nb: 'Ta inn i livet', en: 'Adjust waist' },
+    'other-request': { nb: 'Annen forespørsel', en: 'Other request' },
+  };
+  return labels[slug]?.[lang] || '';
+};
 
 interface DeliveryChoiceClientProps {
   storeLocations: SanityStoreLocation[];
@@ -103,9 +138,9 @@ const DeliveryChoiceClient = ({
   // Static cart item
   const staticCartItem = {
     id: "static-1",
-    repairType: 1,
-    garment: 1,
-    category: 2,
+    repairTypeSlug: 'hemming' as RepairTypeSlug,
+    garmentSlug: 'upper-body' as GarmentSlug,
+    categorySlug: 'standard',
     price: pricing?.staticItemPrice || 199,
   };
 
@@ -300,7 +335,7 @@ const DeliveryChoiceClient = ({
           {allItems.map((item, index) => (
             <div key={index} className="flex justify-between items-center">
               <span className="text-sm" style={{ color: colors.textSecondary }}>
-                {getRepairTypeLabel(item.repairType)} - {getGarmentLabel(item.garment)}
+                {getRepairTypeLabelFromSlug(item.repairTypeSlug, language)} - {getGarmentLabelFromSlug(item.garmentSlug, language)}
               </span>
               <span className="text-sm">{item.price} kr</span>
             </div>

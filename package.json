@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typegen": "sanity typegen generate",
-    "prebuild": "npm run typegen"
+    "typegen": "sanity schema extract && sanity typegen generate"
   },
   "dependencies": {
     "@firebase/app": "^0.11.5",
@@ -45,8 +44,7 @@
     "styled-components": "^6.1.19",
     "tailwind-merge": "^3.2.0",
     "vercel": "^41.7.0",
-    "zod": "^3.24.3",
-    "zustand": "^5.0.3"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@sanity/cli": "^4.19.0",

@@ -3,7 +3,7 @@
 import React from 'react';
 import Stepper from '@/components/ui/stepper';
 import { COLORS } from '@/constants/colors';
-import useFormDataStore from '@/store';
+import { useCart } from '@/contexts/CartContext';
 import { getRepairTypeLabel, getGarmentLabel } from '@/utils/enumLabels';
 
 interface CheckoutWizardProps {
@@ -23,7 +23,7 @@ const CheckoutWizard: React.FC<CheckoutWizardProps> = ({
   shippingCost,
   shippingLabel,
 }) => {
-  const { cart } = useFormDataStore();
+  const { cart } = useCart();
 
   // Static cart item (same as in cart page)
   const staticCartItem = {

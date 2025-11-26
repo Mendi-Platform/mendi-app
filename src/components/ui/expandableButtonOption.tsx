@@ -4,6 +4,15 @@ import { Pencil, Trash2 } from "lucide-react";
 import ActionButtons from "./action-buttons";
 import { Radio } from "./radio";
 
+interface OptionItem {
+  id: string;
+  name: string;
+  subText?: string;
+  address?: string;
+  price?: number;
+  logo?: StaticImageData | string;
+}
+
 interface ExpandableButtonOptionProps {
   label: string;
   subText?: string;
@@ -11,13 +20,7 @@ interface ExpandableButtonOptionProps {
   logo?: StaticImageData;
   active?: boolean;
   collapsed?: boolean;
-  options?: Array<{
-    id: string;
-    name: string;
-    address: string;
-    price: number;
-    logo: StaticImageData;
-  }>;
+  options?: OptionItem[];
   selectedOption?: string;
   variant?: "store-list" | "input";
   onMainClick?: () => void;
@@ -166,7 +169,7 @@ const ExpandableButtonOption = ({
           <div className="flex items-center gap-3 mb-6">
             <div>
               <span className="text-xs text-[#797979]">{selected.name}</span>
-              <span className="text-sm font-medium block">{selected.address}</span>
+              <span className="text-sm font-medium block">{selected.subText || selected.address}</span>
             </div>
           </div>
           <ActionButtons onEdit={onEdit} onDelete={onDelete} />
@@ -201,7 +204,10 @@ const ExpandableButtonOption = ({
               />
               <div className="flex-1">
                 <span className="text-xs text-[#797979]">{option.name}</span>
-                <span className="text-sm font-medium block">{option.address}</span>
+                <span className="text-sm font-medium block">{option.subText || option.address}</span>
+                {option.price !== undefined && option.price > 0 && (
+                  <span className="text-xs text-[#797979]">{option.price} kr</span>
+                )}
               </div>
             </div>
           ))}

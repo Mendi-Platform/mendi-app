@@ -2,7 +2,7 @@ import Image, { StaticImageData } from "next/image";
 
 interface Props {
   label: string;
-  logo?: StaticImageData;
+  logo?: StaticImageData | string;
   active: boolean;
   onClick: () => void;
   subText?: string;
@@ -36,10 +36,18 @@ const ButtonOption = ({ label, logo, active, onClick, subText, price, priceText 
   );
 };
 
-const IconWrapper = ({ icon }: { icon: StaticImageData }) => {
+const IconWrapper = ({ icon }: { icon: StaticImageData | string }) => {
+  const isUrl = typeof icon === 'string';
+
   return (
     <div className="bg-[#E2E2E2] border border-[#006EFF] h-12 w-12 flex justify-center items-center rounded-[11px]">
-      <Image src={icon} alt="Picture of the author" />
+      <Image
+        src={icon}
+        alt="Icon"
+        width={isUrl ? 32 : undefined}
+        height={isUrl ? 32 : undefined}
+        className="object-contain"
+      />
     </div>
   );
 };

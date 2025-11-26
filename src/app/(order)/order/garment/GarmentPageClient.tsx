@@ -3,7 +3,6 @@
 import { LinkButton } from "@/components/ui/button";
 import ButtonOption from "@/components/ui/buttonOption";
 import { useCart } from "@/contexts/CartContext";
-import Image from "next/image";
 import type { SanityGarment } from "@/sanity/lib/types";
 import { getLocalizedValue } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";

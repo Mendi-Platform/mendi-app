@@ -1,6 +1,5 @@
 import Image, { StaticImageData } from "next/image";
 import React, { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
 import ActionButtons from "./action-buttons";
 import { Radio } from "./radio";
 

@@ -17,13 +17,15 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { useToast } from "@/components/ui/toast";
 import { getRepairTypeLabel, getGarmentLabel } from "@/utils/enumLabels";
+import { REPAIR_PRICES } from "@/constants/prices";
+import { COLORS } from "@/constants/colors";
 
 // Static cart item
 const staticCartItem = {
   id: "static-1",
   title: "Statisk vare",
   logo: sweater,
-  price: 199,
+  price: REPAIR_PRICES.STATIC_ITEM,
   formData: {
     category: Category.Standard,
     service: ServiceChoices.Repair,
@@ -33,7 +35,7 @@ const staticCartItem = {
     mainCategory: MainCategory.Clothes,
     description: "Dette er en statisk vare.",
     repairDetails: {},
-    price: 199,
+    price: REPAIR_PRICES.STATIC_ITEM,
   } as FormData,
 };
 
@@ -105,9 +107,9 @@ const CartPage = () => {
   const subtotal = allCartItems.reduce((sum, item) => sum + (item.price || 0), 0);
 
   return (
-    <div className="max-w-md mx-auto px-4 py-6">
+    <div className="w-full max-w-md lg:max-w-2xl mx-auto px-4 py-6">
       <h1 className="font-medium text-lg mb-1">Handlekurv ({allCartItems.length})</h1>
-      <p className="mb-6 text-sm font-normal text-[#797979]">
+      <p className="mb-6 text-sm font-normal" style={{ color: COLORS.textSecondary }}>
         Legg til andre tjenester i bestillingen eller fortsett til kassen.
       </p>
       <div className="flex flex-col gap-4 mb-4">
@@ -130,8 +132,13 @@ const CartPage = () => {
         onClick={() => router.push("/order/garment")}
         className="mb-6"
       />
-      <div className="flex justify-between items-center border-t-2 border-[#242424] pt-4 mb-6">
-        <span className="text-base font-bold text-[#242424]">Subtotal <span className="text-xs font-normal text-[#797979]">inkl.mva.</span></span>
+      <div
+        className="flex justify-between items-center border-t-2 pt-4 mb-6"
+        style={{ borderColor: COLORS.textPrimary }}
+      >
+        <span className="text-base font-bold" style={{ color: COLORS.textPrimary }}>
+          Subtotal <span className="text-xs font-normal" style={{ color: COLORS.textSecondary }}>inkl.mva.</span>
+        </span>
         <span className="text-base font-medium">{subtotal} kr</span>
       </div>
       <LinkButton label="Til kassen" link="/order/address-form" />

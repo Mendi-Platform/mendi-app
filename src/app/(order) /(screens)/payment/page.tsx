@@ -194,7 +194,15 @@ const PaymentPage = () => {
   };
 
   // Helper function to update localStorage
-  const updateLocalStorage = (updates: any) => {
+  const updateLocalStorage = (updates: Partial<{
+    selectedDelivery: string;
+    selectedStore: string;
+    storeSelected: boolean;
+    selectedPosten: string;
+    postenSelected: boolean;
+    syerInput: string;
+    syerSubmitted: boolean;
+  }>) => {
     const currentState = {
       selectedDelivery,
       selectedStore,

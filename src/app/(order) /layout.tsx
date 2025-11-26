@@ -54,7 +54,7 @@ export default async function OrderLayout({
         </div>
       </div>
       <div className="container mx-auto px-6 py-8">
-        <div className="flex flex-col max-w-md mx-auto">{children}</div>
+        <div className="flex flex-col max-w-md lg:max-w-4xl mx-auto">{children}</div>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
-    FormControl,    
+    FormControl,
     FormField,
     FormItem,
     FormLabel,
@@ -15,10 +15,12 @@ import { Input } from "@/components/ui/input"
 import { z } from "zod"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation";
-import Stepper from "@/components/ui/stepper";
 import { useState, useEffect } from "react";
 import ButtonOption from "@/components/ui/buttonOption";
 import ActionButtons from "../../../../components/ui/action-buttons";
+import CheckoutWizard from "@/components/checkout/CheckoutWizard";
+import { DELIVERY_STEPS, getStepLabels } from "@/constants/steps";
+import { COLORS } from "@/constants/colors";
 
 const addressFormSchema = z.object({
   streetAddress: z.string().min(1, { message: "Gateadresse er påkrevd." }),
@@ -239,8 +241,8 @@ const AddressFormPage = () => {
         }
     };
 
-    const steps = ["Handlekurv", "Adresse", "Betaling"];
-    const currentStep = 2; // Vi er på adresse-steget
+    const steps = getStepLabels(DELIVERY_STEPS);
+    const currentStep = 1; // Vi er på adresse-steget (first step in DELIVERY_STEPS)
 
     // Check if we can add more addresses (max 5)
     const canAddMoreAddresses = savedAddresses.length < 5;
@@ -248,14 +250,9 @@ const AddressFormPage = () => {
     // Show address list if we have saved addresses and not showing form
     if (savedAddresses.length > 0 && !showForm) {
         return (
-            <>
-                {/* Stepper */}
-                <div className="mb-8">
-                    <Stepper steps={steps} currentStep={currentStep} />
-                </div>
-
+            <CheckoutWizard steps={steps} currentStep={currentStep} showSummary={true}>
                 <h1 className="font-medium text-lg mb-3">Leveringsadresse</h1>
-                <p className="mb-11 text-sm font-normal text-[#797979]">
+                <p className="mb-11 text-sm font-normal" style={{ color: COLORS.textSecondary }}>
                     Legg til andre tjenester i bestillingen eller fortsett til levering.
                 </p>
 
@@ -264,23 +261,23 @@ const AddressFormPage = () => {
                     {savedAddresses.map((address) => (
                         <div
                             key={address.id}
-                            className={`p-4 rounded-[18px] cursor-pointer border transition-all ${
-                                selectedAddressId === address.id
-                                    ? 'bg-[#BFDAFF] border-[#006EFF]'
-                                    : 'bg-[#F3F3F3] border-transparent'
-                            }`}
+                            className="p-4 rounded-[18px] cursor-pointer border transition-all"
+                            style={{
+                                backgroundColor: selectedAddressId === address.id ? COLORS.primaryLight : COLORS.bgDefault,
+                                borderColor: selectedAddressId === address.id ? COLORS.primary : 'transparent',
+                            }}
                         >
-                            <div 
+                            <div
                                 onClick={() => handleAddressSelect(address.id)}
                                 className="space-y-1"
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="text-lg">{getAddressTypeIcon(address.addressType)}</span>
-                                    <span className="text-sm font-medium text-[#797979]">
+                                    <span className="text-sm font-medium" style={{ color: COLORS.textSecondary }}>
                                         {getAddressTypeLabel(address.addressType)}
                                     </span>
                                 </div>
-                                <div className="flex gap-2 text-sm text-[#797979]">
+                                <div className="flex gap-2 text-sm" style={{ color: COLORS.textSecondary }}>
                                     <span>First name</span>
                                     <span>Last name</span>
                                 </div>
@@ -288,15 +285,15 @@ const AddressFormPage = () => {
                                     {address.streetAddress}
                                 </div>
                                 {address.addressAdditional && (
-                                    <div className="text-sm text-[#797979]">
+                                    <div className="text-sm" style={{ color: COLORS.textSecondary }}>
                                         {address.addressAdditional}
                                     </div>
                                 )}
-                                <div className="text-sm text-[#797979]">
+                                <div className="text-sm" style={{ color: COLORS.textSecondary }}>
                                     {address.zipCode} {address.city}
                                 </div>
                             </div>
-                            
+
                             {/* Action Buttons - Only show when this address is selected */}
                             {selectedAddressId === address.id && (
                                 <ActionButtons
@@ -313,9 +310,13 @@ const AddressFormPage = () => {
                 {canAddMoreAddresses && (
                     <button
                         onClick={handleAddNewAddress}
-                        className="flex items-center gap-3 w-full p-4 mb-14 rounded-[18px] bg-[#F3F3F3]"
+                        className="flex items-center gap-3 w-full p-4 mb-14 rounded-[18px]"
+                        style={{ backgroundColor: COLORS.bgDefault }}
                     >
-                        <div className="w-6 h-6 bg-[#006EFF] rounded-full flex items-center justify-center">
+                        <div
+                            className="w-6 h-6 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: COLORS.primary }}
+                        >
                             <span className="text-white text-lg font-medium">+</span>
                         </div>
                         <span className="text-base font-medium">Legg til ny adresse</span>
@@ -324,7 +325,7 @@ const AddressFormPage = () => {
 
                 {/* Message when max addresses reached */}
                 {!canAddMoreAddresses && (
-                    <div className="text-center text-sm text-[#797979] mb-14">
+                    <div className="text-center text-sm mb-14" style={{ color: COLORS.textSecondary }}>
                         Du kan ha maksimalt 5 lagrede adresser
                     </div>
                 )}
@@ -333,31 +334,30 @@ const AddressFormPage = () => {
                 <button
                     onClick={handleContinueWithSelectedAddress}
                     disabled={!selectedAddressId}
-                    className={`block w-full text-center py-2.5 rounded-[20px] text-xl font-semibold ${
-                        !selectedAddressId
-                            ? "bg-white text-[#A7A7A7] border border-black/30 cursor-auto"
-                            : "bg-[#006EFF] text-white hover:opacity-70"
-                    }`}
+                    className="block w-full text-center py-2.5 rounded-[20px] text-xl font-semibold transition-opacity"
+                    style={{
+                        backgroundColor: selectedAddressId ? COLORS.primary : 'white',
+                        color: selectedAddressId ? 'white' : COLORS.textDisabled,
+                        border: selectedAddressId ? 'none' : '1px solid rgba(0,0,0,0.3)',
+                        cursor: selectedAddressId ? 'pointer' : 'auto',
+                    }}
+                    onMouseOver={(e) => selectedAddressId && (e.currentTarget.style.opacity = '0.7')}
+                    onMouseOut={(e) => selectedAddressId && (e.currentTarget.style.opacity = '1')}
                 >
                     Videre
                 </button>
-            </>
+            </CheckoutWizard>
         );
     }
 
     // Show form (either no saved addresses or user clicked "add new")
     return (
-        <>
-            {/* Stepper */}
-            <div className="mb-8">
-                <Stepper steps={steps} currentStep={currentStep} />
-            </div>
-
+        <CheckoutWizard steps={steps} currentStep={currentStep} showSummary={true}>
             <h1 className="font-medium text-lg mb-3">
                 {editingAddressId ? "Rediger adresse" : "Leveringsadresse"}
             </h1>
-            <p className="mb-11 text-sm font-normal text-[#797979]">
-                {editingAddressId 
+            <p className="mb-11 text-sm font-normal" style={{ color: COLORS.textSecondary }}>
+                {editingAddressId
                     ? "Oppdater adressen din."
                     : "Legg inn adressen hvor du vil at plagget skal leveres."
                 }
@@ -372,7 +372,7 @@ const AddressFormPage = () => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Adressetype</FormLabel>
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 flex-wrap">
                                     <ButtonOption
                                         label="🏠 Hjemme"
                                         active={field.value === "home"}
@@ -402,7 +402,7 @@ const AddressFormPage = () => {
                                 <FormLabel>Gate og husnummer</FormLabel>
                                 <FormControl>
                                     <Input {...field} placeholder="Eksempel: Storgata 1" />
-                                </FormControl>              
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -413,11 +413,11 @@ const AddressFormPage = () => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
-                                    Adressetillegg <span className="text-[#A7A7A7]">(valgfritt)</span>
+                                    Adressetillegg <span style={{ color: COLORS.textDisabled }}>(valgfritt)</span>
                                 </FormLabel>
                                 <FormControl>
                                     <Input {...field} placeholder="H0201" />
-                                </FormControl>              
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -430,7 +430,7 @@ const AddressFormPage = () => {
                                 <FormLabel>Postnummer</FormLabel>
                                 <FormControl>
                                     <Input {...field} placeholder="0123" />
-                                </FormControl>              
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -443,12 +443,12 @@ const AddressFormPage = () => {
                                 <FormLabel>Sted</FormLabel>
                                 <FormControl>
                                     <Input {...field} placeholder="Oslo" />
-                                </FormControl>              
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    
+
                     {!editingAddressId && (
                         <FormField
                             control={form.control}
@@ -471,17 +471,22 @@ const AddressFormPage = () => {
                             )}
                         />
                     )}
-                    
-                    <Button 
-                        type="submit" 
+
+                    <Button
+                        type="submit"
                         disabled={!isFormValid}
-                        className="w-full bg-[#006EFF] text-white py-3 rounded-[20px] text-xl font-semibold hover:opacity-70 disabled:bg-white disabled:text-[#A7A7A7] disabled:border disabled:border-black/30"
+                        className="w-full py-3 rounded-[20px] text-xl font-semibold transition-opacity"
+                        style={{
+                            backgroundColor: isFormValid ? COLORS.primary : 'white',
+                            color: isFormValid ? 'white' : COLORS.textDisabled,
+                            border: isFormValid ? 'none' : '1px solid rgba(0,0,0,0.3)',
+                        }}
                     >
                         {editingAddressId ? "Oppdater adresse" : "Videre"}
                     </Button>
                 </form>
-            </Form>          
-        </>
+            </Form>
+        </CheckoutWizard>
     );
 };
 

@@ -42,7 +42,7 @@ export const siteSettingsData = {
 export const storeLocationsData = [
   {
     _type: 'storeLocation',
-    _id: 'store-grunerløkka',
+    _id: 'store-grunerlokka',
     name: 'Grünerløkka, Oslo',
     address: 'Raw Denim & Vintage Jeans',
     city: 'Oslo',
@@ -51,7 +51,7 @@ export const storeLocationsData = [
   },
   {
     _type: 'storeLocation',
-    _id: 'store-grunerløkka-xaki',
+    _id: 'store-grunerlokka-xaki',
     name: 'Grünerløkka, Oslo',
     address: 'XAKI',
     city: 'Oslo',

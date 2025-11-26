@@ -19,16 +19,16 @@ const CheckoutPage = () => {
         const hasAddress = false; // Dette vil komme fra API
         
         if (!hasAddress) {
-          // Hvis ingen adresse, send til delivery form
-          router.push("/order/checkout/delivery");
+          // Hvis ingen adresse, send til address form
+          router.push("/order/address-form");
         } else {
-          // Hvis adresse finnes, gå til neste steg (payment, confirmation, etc.)
-          router.push("/order/checkout/payment"); // eller neste steg
+          // Hvis adresse finnes, gå til delivery choice
+          router.push("/order/delivery-choice");
         }
       } catch (error) {
         console.error("Error checking user address:", error);
-        // Ved feil, send til delivery form som fallback
-        router.push("/order/checkout/delivery");
+        // Ved feil, send til address form som fallback
+        router.push("/order/address-form");
       }
     };
 

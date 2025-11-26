@@ -10,11 +10,11 @@ interface SanityDocument {
 
 export async function POST() {
   // Check if API token is configured
-  if (!process.env.SANITY_API_TOKEN) {
+  if (!process.env.SANITY_EDITOR_TOKEN) {
     return NextResponse.json(
       {
-        error: 'SANITY_API_TOKEN not configured',
-        instructions: 'Please add SANITY_API_TOKEN to your .env file. Generate a token at https://www.sanity.io/manage/project/mz1hdno8/api#tokens'
+        error: 'SANITY_EDITOR_TOKEN not configured',
+        instructions: 'Please add SANITY_EDITOR_TOKEN to your .env file. Generate a token at https://www.sanity.io/manage'
       },
       { status: 500 }
     )

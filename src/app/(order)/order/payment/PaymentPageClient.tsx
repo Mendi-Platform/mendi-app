@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { createOrder, type CartItemWithMeta } from "@/lib/orders";
 import Stepper from "@/components/ui/stepper";
 import CategoryCard from "@/components/ui/categoryCard";
 import ButtonWithTextInput from "@/components/ui/buttonWithTextInput";
@@ -97,9 +97,10 @@ const PaymentPageClient = ({
   siteSettings,
 }: PaymentPageClientProps) => {
   const { language } = useLanguage();
-  const router = useRouter();
   const { cart } = useCart();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // Delivery state
   const [selectedDelivery, setSelectedDelivery] = useState<DeliveryType>(DeliveryType.None);
@@ -329,8 +330,79 @@ const PaymentPageClient = ({
   const total = subtotal + shippingCost;
   const minPostenPrice = Math.min(...postenOptions.map(o => o.price));
 
-  const handlePayment = () => {
-    router.push("/order/confirmation");
+  const handlePayment = async () => {
+    setIsLoading(true);
+    setPaymentError(null);
+
+    try {
+      // Prepare cart items with metadata for order creation
+      const orderItems: CartItemWithMeta[] = allCartItems.map(item => ({
+        ...item.formData,
+        id: item.id,
+        title: item.title,
+      }));
+
+      // Get delivery details
+      const deliveryDetails: {
+        selectedStore?: string;
+        selectedPosten?: string;
+        syerMeetingPlace?: string;
+      } = {};
+
+      if (selectedDelivery === DeliveryType.PickupPoint && selectedStore) {
+        deliveryDetails.selectedStore = selectedStore;
+      } else if (selectedDelivery === DeliveryType.Posten && selectedPosten) {
+        deliveryDetails.selectedPosten = selectedPosten;
+      } else if (selectedDelivery === DeliveryType.Syer && syerInput) {
+        deliveryDetails.syerMeetingPlace = syerInput;
+      }
+
+      // 1. Create order in Firestore
+      const orderId = await createOrder({
+        items: orderItems,
+        subtotal,
+        shippingCost,
+        total,
+        deliveryMethod: selectedDelivery,
+        deliveryDetails,
+      });
+
+      // 2. Create Stripe checkout session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          items: orderItems,
+          shippingCost,
+          total,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+
+      // 3. Redirect to Stripe Checkout
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentError(
+        error instanceof Error
+          ? error.message
+          : 'Det oppsto en feil. Vennligst prøv igjen.'
+      );
+      setIsLoading(false);
+    }
   };
 
   // i18n labels
@@ -345,7 +417,8 @@ const PaymentPageClient = ({
     free: language === 'nb' ? 'Gratis' : 'Free',
     total: language === 'nb' ? 'Total sum' : 'Total',
     inclVat: language === 'nb' ? 'inkl. mva.' : 'incl. VAT',
-    payWithVipps: language === 'nb' ? 'Betal med Vipps' : 'Pay with Vipps',
+    payWithCard: language === 'nb' ? 'Betal med kort' : 'Pay with card',
+    processing: language === 'nb' ? 'Behandler...' : 'Processing...',
     dropOff: getLocalizedValue(pickupOption?.name, language) || (language === 'nb' ? 'Drop-off i butikk' : 'Drop-off at store'),
     meetTailor: getLocalizedValue(syerOption?.name, language) || (language === 'nb' ? 'Møt syer' : 'Meet tailor'),
     meetTailorSubtext: getLocalizedValue(syerOption?.description, language) || '',
@@ -492,13 +565,22 @@ const PaymentPageClient = ({
           </div>
         </div>
 
+        {/* Error Message */}
+        {paymentError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {paymentError}
+          </div>
+        )}
+
         {/* Payment Button */}
         <button
           type="button"
           onClick={handlePayment}
-          className="block w-full text-center py-3 rounded-[20px] text-xl font-semibold bg-[#FF6B35] text-white hover:opacity-70"
+          disabled={isLoading}
+          className="block w-full text-center py-3 rounded-[20px] text-xl font-semibold text-white hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ backgroundColor: colors.primary }}
         >
-          {labels.payWithVipps}
+          {isLoading ? labels.processing : labels.payWithCard}
         </button>
       </div>
     </div>

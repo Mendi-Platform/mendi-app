@@ -46,6 +46,7 @@ type CartAction =
   | { type: "SET_REPAIR_DETAIL"; field: keyof FormData["repairDetails"]; value: FormData["repairDetails"][keyof FormData["repairDetails"]] }
   | { type: "ADD_TO_CART" }
   | { type: "REMOVE_FROM_CART"; id: string }
+  | { type: "CLEAR_CART" }
   | { type: "RESET_FORM" }
   | { type: "SET_EDITING_ID"; id: string | null }
   | { type: "HYDRATE"; payload: { formData: FormData; cart: CartItem[] } }
@@ -123,6 +124,14 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         cart: state.cart.filter((item) => item.id !== action.id),
       };
 
+    case "CLEAR_CART":
+      return {
+        ...state,
+        cart: [],
+        formData: initialFormData,
+        editingId: null,
+      };
+
     case "RESET_FORM":
       return { ...state, formData: initialFormData };
 
@@ -158,6 +167,7 @@ interface CartContextValue {
   ) => void;
   addToCart: () => void;
   removeFromCart: (id: string) => void;
+  clearCart: () => void;
   resetFormData: () => void;
   setEditingId: (id: string | null) => void;
   clearEditingId: () => void;
@@ -231,6 +241,10 @@ export function CartProvider({ children }: CartProviderProps) {
     dispatch({ type: "REMOVE_FROM_CART", id });
   }, []);
 
+  const clearCart = useCallback(() => {
+    dispatch({ type: "CLEAR_CART" });
+  }, []);
+
   const resetFormData = useCallback(() => {
     dispatch({ type: "RESET_FORM" });
   }, []);
@@ -253,6 +267,7 @@ export function CartProvider({ children }: CartProviderProps) {
     updateRepairDetails,
     addToCart,
     removeFromCart,
+    clearCart,
     resetFormData,
     setEditingId,
     clearEditingId,

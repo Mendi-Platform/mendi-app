@@ -41,6 +41,7 @@
     "sanity": "^4.19.0",
     "server-only": "^0.0.1",
     "sharp": "^0.34.1",
+    "stripe": "^20.0.0",
     "styled-components": "^6.1.19",
     "tailwind-merge": "^3.2.0",
     "vercel": "^41.7.0",

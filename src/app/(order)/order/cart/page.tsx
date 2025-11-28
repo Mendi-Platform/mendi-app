@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPricing, getSiteSettings } from "@/sanity/lib/queries";
+import { getPricing, getSiteSettings, getGarments } from "@/sanity/lib/queries";
 import CartClient from "./CartClient";
 
 export const metadata: Metadata = {
@@ -8,15 +8,17 @@ export const metadata: Metadata = {
 };
 
 export default async function CartPage() {
-  const [pricing, siteSettings] = await Promise.all([
+  const [pricing, siteSettings, garments] = await Promise.all([
     getPricing(),
     getSiteSettings(),
+    getGarments(),
   ]);
 
   return (
     <CartClient
       pricing={pricing}
       siteSettings={siteSettings}
+      garments={garments}
     />
   );
 } 

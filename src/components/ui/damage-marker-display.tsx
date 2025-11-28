@@ -2,42 +2,7 @@
 
 import Image from "next/image";
 import type { GarmentSlug, DamageMarkers } from "@/types/formData";
-import frontTop from "@/app/assets/icons/mark-damage/front-top.svg";
-import backTop from "@/app/assets/icons/mark-damage/back-top.svg";
-import frontBottom from "@/app/assets/icons/mark-damage/front-bottom.svg";
-import backBottom from "@/app/assets/icons/mark-damage/back-bottom.svg";
-import frontDress from "@/app/assets/icons/mark-damage/front-dress.svg";
-import backDress from "@/app/assets/icons/mark-damage/back-dress.svg";
-import frontSuit from "@/app/assets/icons/mark-damage/front-suit.svg";
-import backSuit from "@/app/assets/icons/mark-damage/back-suit.svg";
-import frontCoat from "@/app/assets/icons/mark-damage/front-coat.svg";
-import backCoat from "@/app/assets/icons/mark-damage/back-coat.svg";
-
-const garmentImages: Record<GarmentSlug, { front: typeof frontTop; back: typeof backTop } | undefined> = {
-  '': undefined,
-  'upper-body': {
-    front: frontTop,
-    back: backTop,
-  },
-  'lower-body': {
-    front: frontBottom,
-    back: backBottom,
-  },
-  'kjole': {
-    front: frontDress,
-    back: backDress,
-  },
-  'dress': {
-    front: frontSuit,
-    back: backSuit,
-  },
-  'outer-wear': {
-    front: frontCoat,
-    back: backCoat,
-  },
-  'leather-items': undefined,
-  'curtains': undefined,
-};
+import { useEffect, useState } from "react";
 
 interface DamageMarkerDisplayProps {
   garmentSlug: GarmentSlug;
@@ -45,14 +10,45 @@ interface DamageMarkerDisplayProps {
   size?: "small" | "medium" | "large";
 }
 
+interface GarmentImages {
+  front?: string;
+  back?: string;
+}
+
 const DamageMarkerDisplay = ({
   garmentSlug,
   damageMarkers,
   size = "small"
 }: DamageMarkerDisplayProps) => {
-  const currentGarment = garmentImages[garmentSlug];
-  
-  if (!currentGarment || !damageMarkers) {
+  const [garmentImages, setGarmentImages] = useState<GarmentImages>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGarmentImages = async () => {
+      if (!garmentSlug) return;
+
+      try {
+        const response = await fetch('/api/garments');
+        const garments = await response.json();
+        const garment = garments.find((g: { slug: { current: string } }) => g.slug.current === garmentSlug);
+
+        if (garment) {
+          setGarmentImages({
+            front: garment.damageMarkerFront,
+            back: garment.damageMarkerBack
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch garment images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGarmentImages();
+  }, [garmentSlug]);
+
+  if (loading || !garmentImages.front || !garmentImages.back || !damageMarkers) {
     return null;
   }
 
@@ -82,7 +78,7 @@ const DamageMarkerDisplay = ({
             <span className="text-xs text-gray-600">Foran</span>
             <div className={`relative ${sizeClasses[size]} bg-white rounded border border-gray-200`}>
               <Image
-                src={currentGarment.front}
+                src={garmentImages.front!}
                 alt="Foran"
                 width={100}
                 height={120}
@@ -108,7 +104,7 @@ const DamageMarkerDisplay = ({
             <span className="text-xs text-gray-600">Bak</span>
             <div className={`relative ${sizeClasses[size]} bg-white rounded border border-gray-200`}>
               <Image
-                src={currentGarment.back}
+                src={garmentImages.back!}
                 alt="Bak"
                 width={100}
                 height={120}

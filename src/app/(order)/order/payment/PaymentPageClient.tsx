@@ -8,20 +8,13 @@ import CategoryCard from "@/components/ui/categoryCard";
 import ButtonWithTextInput from "@/components/ui/buttonWithTextInput";
 import ExpandableButtonOption from "@/components/ui/expandableButtonOption";
 import type { FormData, GarmentSlug } from "@/types/formData";
-import sweater from "@/app/assets/icons/sweater.png";
-import pants from "@/app/assets/icons/pants.png";
-import dress from "@/app/assets/icons/dress.png";
-import suit from "@/app/assets/icons/suit.png";
-import frakk from "@/app/assets/icons/frakk.png";
-import leather from "@/app/assets/icons/leather.svg";
-import curtainsIcon from "@/app/assets/icons/curtain.svg";
-import postenLogo from "@/app/assets/icons/posten-logo.svg";
 import type {
   SanityStoreLocation,
   SanityPostenOption,
   SanityDeliveryOption,
   SanityPricing,
   SanitySiteSettings,
+  SanityGarment,
 } from "@/sanity/lib/types";
 import { getLocalizedValue, getLocalizedArray } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -33,28 +26,13 @@ interface PaymentPageClientProps {
   deliveryOptions: SanityDeliveryOption[];
   pricing: SanityPricing | null;
   siteSettings: SanitySiteSettings | null;
+  garments: SanityGarment[];
 }
 
-// Helper to get logo based on garment slug
-const getLogoBySlug = (garmentSlug: GarmentSlug) => {
-  switch (garmentSlug) {
-    case 'upper-body':
-      return sweater;
-    case 'lower-body':
-      return pants;
-    case 'kjole':
-      return dress;
-    case 'dress':
-      return suit;
-    case 'outer-wear':
-      return frakk;
-    case 'leather-items':
-      return leather;
-    case 'curtains':
-      return curtainsIcon;
-    default:
-      return sweater;
-  }
+// Helper to get logo URL from garments array
+const getLogoBySlug = (garmentSlug: GarmentSlug, garments: SanityGarment[]): string | undefined => {
+  const garment = garments.find(g => g.slug.current === garmentSlug);
+  return garment?.icon;
 };
 
 // Helper to get garment label from slug
@@ -95,6 +73,7 @@ const PaymentPageClient = ({
   deliveryOptions,
   pricing,
   siteSettings,
+  garments,
 }: PaymentPageClientProps) => {
   const { language } = useLanguage();
   const { cart } = useCart();
@@ -154,7 +133,7 @@ const PaymentPageClient = ({
   const staticCartItem = {
     id: "static-1",
     title: language === 'nb' ? 'Statisk vare' : 'Static item',
-    logo: sweater,
+    logo: getLogoBySlug('upper-body' as GarmentSlug, garments),
     price: staticItemPrice,
     formData: {
       categorySlug: 'standard',
@@ -197,7 +176,7 @@ const PaymentPageClient = ({
         item.repairTypeSlug && item.garmentSlug
           ? `${getRepairTypeLabelFromSlug(item.repairTypeSlug, language)}\n${getGarmentLabelFromSlug(item.garmentSlug, language)}\n${item.categorySlug === 'standard' ? "Standard" : item.categorySlug === 'premium' ? "Premium" : ""}`
           : item.description || (language === 'nb' ? 'Dynamisk vare' : 'Dynamic item'),
-      logo: getLogoBySlug(item.garmentSlug),
+      logo: getLogoBySlug(item.garmentSlug, garments),
       formData: item,
       price: item.price || 0,
       id: typeof item.id === "string" ? item.id : String(item.id),
@@ -499,7 +478,7 @@ const PaymentPageClient = ({
               <ExpandableButtonOption
                 label=""
                 price={`${language === 'nb' ? 'Fra' : 'From'} ${minPostenPrice} kr`}
-                logo={postenLogo}
+                logo={postenDeliveryOption?.logo}
                 active={deliveryExpanded}
                 collapsed={postenSelected}
                 options={postenOptionsFormatted}

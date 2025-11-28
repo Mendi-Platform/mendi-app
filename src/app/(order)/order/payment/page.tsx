@@ -5,6 +5,7 @@ import {
   getDeliveryOptions,
   getPricing,
   getSiteSettings,
+  getGarments,
 } from "@/sanity/lib/queries";
 import PaymentPageClient from "./PaymentPageClient";
 
@@ -15,12 +16,13 @@ export const metadata: Metadata = {
 
 export default async function PaymentPage() {
   // Fetch all data from Sanity in parallel
-  const [storeLocations, postenOptions, deliveryOptions, pricing, siteSettings] = await Promise.all([
+  const [storeLocations, postenOptions, deliveryOptions, pricing, siteSettings, garments] = await Promise.all([
     getStoreLocations(),
     getPostenOptions(),
     getDeliveryOptions(),
     getPricing(),
     getSiteSettings(),
+    getGarments(),
   ]);
 
   return (
@@ -30,6 +32,7 @@ export default async function PaymentPage() {
       deliveryOptions={deliveryOptions}
       pricing={pricing}
       siteSettings={siteSettings}
+      garments={garments}
     />
   );
 }

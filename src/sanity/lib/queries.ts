@@ -63,6 +63,8 @@ export const getGarmentsQuery = groq`*[_type == "garment"]{
   slug,
   label { nb, en },
   "icon": icon.asset->url,
+  "damageMarkerFront": damageMarkerFront.asset->url,
+  "damageMarkerBack": damageMarkerBack.asset->url,
   order,
   isPremiumOnly
 } | order(order asc)`;
@@ -77,6 +79,9 @@ export const getRepairTypesQuery = groq`*[_type == "repairType"]{
 } | order(order asc)`;
 
 export const getSiteSettingsQuery = groq`*[_type == "siteSettings"][0]{
+  "logo": logo.asset->url,
+  "questionIcon": questionIcon.asset->url,
+  "cartIcon": cartIcon.asset->url,
   primaryColor,
   primaryHoverColor,
   primaryLightColor,

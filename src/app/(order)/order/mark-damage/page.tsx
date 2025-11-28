@@ -2,56 +2,58 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import frontTop from "@/app/assets/icons/mark-damage/front-top.svg";
-import backTop from "@/app/assets/icons/mark-damage/back-top.svg";
-import frontBottom from "@/app/assets/icons/mark-damage/front-bottom.svg";
-import backBottom from "@/app/assets/icons/mark-damage/back-bottom.svg";
-import frontDress from "@/app/assets/icons/mark-damage/front-dress.svg";
-import backDress from "@/app/assets/icons/mark-damage/back-dress.svg";
-import frontSuit from "@/app/assets/icons/mark-damage/front-suit.svg";
-import backSuit from "@/app/assets/icons/mark-damage/back-suit.svg";
-import frontCoat from "@/app/assets/icons/mark-damage/front-coat.svg";
-import backCoat from "@/app/assets/icons/mark-damage/back-coat.svg";
 import { LinkButton } from "@/components/ui/button";
 import TabSwitcher from "@/components/ui/TabSwitcher";
 import { useCart } from "@/contexts/CartContext";
-import type { DamageMarkers, GarmentSlug } from "@/types/formData";
+import type { DamageMarkers } from "@/types/formData";
 import { useRouter } from "next/navigation";
 
-const garmentImages: Record<GarmentSlug, { front: string; back: string } | undefined> = {
-  '': undefined,
-  'upper-body': {
-    front: frontTop,
-    back: backTop,
-  },
-  'lower-body': {
-    front: frontBottom,
-    back: backBottom,
-  },
-  'kjole': {
-    front: frontDress,
-    back: backDress,
-  },
-  'dress': {
-    front: frontSuit,
-    back: backSuit,
-  },
-  'outer-wear': {
-    front: frontCoat,
-    back: backCoat,
-  },
-  'leather-items': undefined,
-  'curtains': undefined,
-};
+interface GarmentImages {
+  front?: string;
+  back?: string;
+}
 
 const MarkDamagePage = () => {
   const { formData, updateFormData, isHydrated } = useCart();
   const router = useRouter();
-  
+
   // Initialize markers from state or default
   const [markers, setMarkers] = useState<DamageMarkers>({ front: [], back: [] });
   const imgRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<'front' | 'back'>('front');
+  const [garmentImages, setGarmentImages] = useState<GarmentImages>({});
+  const [loading, setLoading] = useState(true);
+
+  // Fetch garment images from Sanity
+  useEffect(() => {
+    const fetchGarmentImages = async () => {
+      if (!formData.garmentSlug) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/garments');
+        const garments = await response.json();
+        const garment = garments.find((g: { slug: { current: string } }) => g.slug.current === formData.garmentSlug);
+
+        if (garment) {
+          setGarmentImages({
+            front: garment.damageMarkerFront,
+            back: garment.damageMarkerBack
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch garment images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isHydrated) {
+      fetchGarmentImages();
+    }
+  }, [formData.garmentSlug, isHydrated]);
 
   // Load markers from store when hydrated
   useEffect(() => {
@@ -122,8 +124,8 @@ const MarkDamagePage = () => {
     saveMarkersToState(newMarkers);
   };
 
-  // Don't render until hydrated
-  if (!isHydrated) {
+  // Don't render until hydrated and images are loaded
+  if (!isHydrated || loading) {
     return (
       <div className="flex flex-col items-center min-h-screen px-4 py-8">
         <div className="animate-pulse">Loading...</div>
@@ -132,10 +134,9 @@ const MarkDamagePage = () => {
   }
 
   const hasMarkers = markers[view].length > 0;
-  const currentGarment = garmentImages[formData.garmentSlug];
 
-  // Hvis currentGarment er undefined, vis loading (redirect vil håndtere dette)
-  if (!currentGarment) {
+  // If no images available, show loading (redirect will handle this)
+  if (!garmentImages.front || !garmentImages.back) {
     return (
       <div className="flex flex-col items-center min-h-screen px-4 py-8">
         <div className="animate-pulse">Loading...</div>
@@ -165,7 +166,7 @@ const MarkDamagePage = () => {
           onClick={handleImageClick}
         >
           <Image
-            src={currentGarment[view]}
+            src={view === 'front' ? garmentImages.front! : garmentImages.back!}
             alt={`${formData.garmentSlug} ${view}`}
             width={200}
             height={300}

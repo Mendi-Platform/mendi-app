@@ -10,6 +10,34 @@ export default defineType({
       title: 'Site Title',
       type: 'string',
     }),
+    // Branding
+    defineField({
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      description: 'Main logo for the site',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: 'questionIcon',
+      title: 'Question Icon',
+      type: 'image',
+      description: 'Icon for help/question button',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: 'cartIcon',
+      title: 'Cart Icon',
+      type: 'image',
+      description: 'Icon for cart button',
+      options: {
+        hotspot: true,
+      },
+    }),
     // Colors
     defineField({
       name: 'primaryColor',

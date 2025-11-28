@@ -82,6 +82,8 @@ export interface SanityGarment {
   slug: { current: string }
   label: LocalizedString
   icon?: string
+  damageMarkerFront?: string
+  damageMarkerBack?: string
   order: number
   isPremiumOnly: boolean
 }
@@ -104,6 +106,9 @@ export interface SanityRepairPrice {
 }
 
 export interface SanitySiteSettings {
+  logo?: string
+  questionIcon?: string
+  cartIcon?: string
   primaryColor: string
   primaryHoverColor: string
   primaryLightColor: string

@@ -38,6 +38,24 @@ export default defineType({
       },
     }),
     defineField({
+      name: 'damageMarkerFront',
+      title: 'Damage Marker - Front',
+      type: 'image',
+      description: 'SVG image for marking damage on the front of the garment',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: 'damageMarkerBack',
+      title: 'Damage Marker - Back',
+      type: 'image',
+      description: 'SVG image for marking damage on the back of the garment',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
       name: 'order',
       title: 'Display Order',
       type: 'number',

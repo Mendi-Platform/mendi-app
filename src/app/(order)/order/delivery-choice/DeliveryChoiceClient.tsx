@@ -4,7 +4,6 @@ import ExpandableButtonOption from "@/components/ui/expandableButtonOption";
 import ButtonWithTextInput from "@/components/ui/buttonWithTextInput";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import postenLogo from "@/app/assets/icons/posten-logo.svg";
 import { useCart } from "@/contexts/CartContext";
 import CheckoutWizard from "@/components/checkout/CheckoutWizard";
 import { DeliveryType } from "@/constants/delivery";
@@ -316,7 +315,7 @@ const DeliveryChoiceClient = ({
         <ExpandableButtonOption
           label=""
           price={`${language === 'nb' ? 'Fra' : 'From'} ${minPostenPrice} kr`}
-          logo={postenLogo}
+          logo={postenOption?.logo}
           active={selectedDelivery === DeliveryType.Posten}
           collapsed={postenSelected}
           options={postenOptionsFormatted}

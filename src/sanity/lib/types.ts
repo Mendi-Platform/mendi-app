@@ -105,6 +105,76 @@ export interface SanityRepairPrice {
   description?: LocalizedText
 }
 
+export interface RoutingCondition {
+  formField: string
+  operator: 'equals' | 'in' | 'notEquals' | 'notIn' | 'isEmpty' | 'isNotEmpty'
+  values?: string[]
+}
+
+export interface RoutingRule {
+  conditions: RoutingCondition[]
+  nextStep: {
+    _ref: string
+    slug?: { current: string }
+  }
+  priority: number
+  description?: string
+}
+
+export interface SanityOrderStepGroup {
+  _id: string
+  name: string
+  label: LocalizedString
+  order: number
+  color?: string
+}
+
+export interface SanityOrderFlowStep {
+  _id: string
+  slug: { current: string }
+  label: LocalizedString
+  stepGroupId: {
+    _ref: string
+    _type: 'reference'
+  }
+  defaultOrder: number
+  componentType: string
+  nextStepRules?: RoutingRule[]
+  defaultNextStep?: {
+    _ref: string
+    slug?: { current: string }
+  }
+  isOptional: boolean
+  skipConditions?: RoutingCondition[]
+}
+
+export interface SanityOrderFlowConfig {
+  startStep: {
+    _ref: string
+    slug?: { current: string }
+  }
+  confirmationStep: {
+    _ref: string
+    slug?: { current: string }
+  }
+  allSteps: Array<{
+    _ref: string
+    _type: 'reference'
+  }>
+  stepGroups: Array<{
+    _ref: string
+    _type: 'reference'
+  }>
+}
+
+export interface OrderFlowStepExpanded extends SanityOrderFlowStep {
+  stepGroup: SanityOrderStepGroup
+  nextStepRules?: Array<RoutingRule & {
+    nextStepSlug?: string
+  }>
+  defaultNextStepSlug?: string
+}
+
 export interface SanitySiteSettings {
   logo?: string
   questionIcon?: string
@@ -120,4 +190,5 @@ export interface SanitySiteSettings {
   checkoutSteps: LocalizedArray
   deliverySteps: LocalizedArray
   maxSavedAddresses: number
+  orderFlowConfig?: SanityOrderFlowConfig
 }

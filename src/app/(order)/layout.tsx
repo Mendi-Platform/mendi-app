@@ -1,6 +1,6 @@
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
-import { getSiteSettings } from "@/sanity/lib/queries";
+import { getSiteSettings, getOrderFlow } from "@/sanity/lib/queries";
 import OrderSteps from "@/components/order/OrderSteps";
 import OrderNavbar from "@/components/order/OrderNavbar";
 
@@ -10,6 +10,10 @@ export default async function OrderLayout({
   children: React.ReactNode;
 }) {
   const siteSettings = await getSiteSettings();
+
+  // Fetch order flow configuration
+  const orderFlowData = await getOrderFlow();
+  const orderFlowConfig = orderFlowData?.orderFlowConfig || null;
 
   // CSS custom properties for colors from Sanity
   const colorStyles = siteSettings ? {
@@ -29,7 +33,7 @@ export default async function OrderLayout({
         <div className="min-h-screen bg-white" style={colorStyles}>
           <OrderNavbar siteSettings={siteSettings} />
           <div className="container mx-auto px-6 py-8">
-            <OrderSteps />
+            <OrderSteps orderFlowConfig={orderFlowConfig} />
             <div className="flex flex-col max-w-md lg:max-w-4xl mx-auto">{children}</div>
           </div>
         </div>

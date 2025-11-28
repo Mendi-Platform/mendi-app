@@ -2,42 +2,36 @@
 
 import GridButtonOption from "@/components/ui/gridButtonOption";
 import { useCart } from "@/contexts/CartContext";
-import { useRouter } from "next/navigation";
-import type { SanityRepairType } from "@/sanity/lib/types";
+import type { SanityRepairType, OrderFlowStepExpanded, SanityOrderStepGroup } from "@/sanity/lib/types";
 import { getLocalizedValue } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useOrderNavigation } from "@/hooks/useOrderNavigation";
 import type { RepairTypeSlug } from "@/types/formData";
 
 interface ServicePageClientProps {
   repairTypes: SanityRepairType[];
+  orderFlowConfig: {
+    startStepSlug: string;
+    confirmationStepSlug: string;
+    allSteps: OrderFlowStepExpanded[];
+    stepGroups: SanityOrderStepGroup[];
+  } | null;
 }
-
-// Mapping of repair type slugs to their next page routes
-const repairTypeRoutes: Record<string, string> = {
-  'replace-zipper': '/order/two-option',
-  'sew-button': '/order/quantity',
-  'hole': '/order/two-option',
-  'belt-loops': '/order/quantity',
-  'hemming': '/order/two-option',
-  'adjust-waist': '/order/two-option',
-  'other-request': '/order/other-request-info',
-};
 
 // Repair types available for curtains
 const curtainRepairSlugs = ['hemming', 'other-request'];
 
-const ServicePageClient = ({ repairTypes }: ServicePageClientProps) => {
+const ServicePageClient = ({ repairTypes, orderFlowConfig }: ServicePageClientProps) => {
   const { language } = useLanguage();
   const { formData, updateFormField } = useCart();
-  const router = useRouter();
+  const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
   const onChoice = (slug: RepairTypeSlug) => {
     updateFormField("repairTypeSlug", slug);
   };
 
   const handleContinue = () => {
-    const nextPage = repairTypeRoutes[formData.repairTypeSlug] || '/order/category';
-    router.push(nextPage);
+    navigateToNext('service'); // Current step slug
   };
 
   // Filter repair types based on garment (curtains have limited options)

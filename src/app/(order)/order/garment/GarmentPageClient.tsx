@@ -1,20 +1,27 @@
 "use client";
 
-import { LinkButton } from "@/components/ui/button";
 import GridButtonOption from "@/components/ui/gridButtonOption";
 import { useCart } from "@/contexts/CartContext";
-import type { SanityGarment } from "@/sanity/lib/types";
+import type { SanityGarment, OrderFlowStepExpanded, SanityOrderStepGroup } from "@/sanity/lib/types";
 import { getLocalizedValue } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useOrderNavigation } from "@/hooks/useOrderNavigation";
 import type { GarmentSlug } from "@/types/formData";
 
 interface GarmentPageClientProps {
   garments: SanityGarment[];
+  orderFlowConfig: {
+    startStepSlug: string;
+    confirmationStepSlug: string;
+    allSteps: OrderFlowStepExpanded[];
+    stepGroups: SanityOrderStepGroup[];
+  } | null;
 }
 
-const GarmentPageClient = ({ garments }: GarmentPageClientProps) => {
+const GarmentPageClient = ({ garments, orderFlowConfig }: GarmentPageClientProps) => {
   const { language } = useLanguage();
   const { formData, updateFormField } = useCart();
+  const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
   const onChoice = (slug: GarmentSlug) => {
     updateFormField("garmentSlug", slug);
@@ -26,6 +33,10 @@ const GarmentPageClient = ({ garments }: GarmentPageClientProps) => {
     }
   };
 
+  const handleContinue = () => {
+    navigateToNext('garment');
+  };
+
   // i18n labels
   const labels = {
     title: language === 'nb'
@@ -33,6 +44,8 @@ const GarmentPageClient = ({ garments }: GarmentPageClientProps) => {
       : 'What type of garment would you like to register?',
     continue: language === 'nb' ? 'Fortsett' : 'Continue',
   };
+
+  const isEnabled = formData.garmentSlug !== '';
 
   return (
     <>
@@ -50,12 +63,18 @@ const GarmentPageClient = ({ garments }: GarmentPageClientProps) => {
           />
         ))}
       </div>
-      <LinkButton
-        label={labels.continue}
-        link="/order/service"
-        prefetch
-        disabled={formData.garmentSlug === ''}
-      />
+      <button
+        type="button"
+        onClick={handleContinue}
+        disabled={!isEnabled}
+        className={`block w-full text-center py-2.5 rounded-[20px] ${
+          !isEnabled
+            ? "bg-white text-[#A7A7A7] border border-black/30 cursor-auto"
+            : "bg-[#006EFF] text-white"
+        } hover:opacity-70 text-xl font-semibold`}
+      >
+        {labels.continue}
+      </button>
     </>
   );
 };

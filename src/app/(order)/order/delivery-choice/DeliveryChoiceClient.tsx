@@ -2,7 +2,6 @@
 
 import ExpandableButtonOption from "@/components/ui/expandableButtonOption";
 import ButtonWithTextInput from "@/components/ui/buttonWithTextInput";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import CheckoutWizard from "@/components/checkout/CheckoutWizard";
@@ -13,9 +12,12 @@ import type {
   SanityDeliveryOption,
   SanityPricing,
   SanitySiteSettings,
+  OrderFlowStepExpanded,
+  SanityOrderStepGroup,
 } from "@/sanity/lib/types";
 import { getLocalizedValue, getLocalizedArray } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useOrderNavigation } from "@/hooks/useOrderNavigation";
 import type { GarmentSlug, RepairTypeSlug } from "@/types/formData";
 
 // Helper to get garment label from slug
@@ -58,6 +60,12 @@ interface DeliveryChoiceClientProps {
   deliveryOptions: SanityDeliveryOption[];
   pricing: SanityPricing | null;
   siteSettings: SanitySiteSettings | null;
+  orderFlowConfig: {
+    startStepSlug: string;
+    confirmationStepSlug: string;
+    allSteps: OrderFlowStepExpanded[];
+    stepGroups: SanityOrderStepGroup[];
+  } | null;
 }
 
 const DeliveryChoiceClient = ({
@@ -66,9 +74,10 @@ const DeliveryChoiceClient = ({
   deliveryOptions,
   pricing,
   siteSettings,
+  orderFlowConfig,
 }: DeliveryChoiceClientProps) => {
   const { language } = useLanguage();
-  const router = useRouter();
+  const { navigateToNext } = useOrderNavigation(orderFlowConfig);
   const { cart } = useCart();
   const [selectedDelivery, setSelectedDelivery] = useState<DeliveryType>(DeliveryType.None);
   const [selectedStore, setSelectedStore] = useState<string>("");
@@ -170,7 +179,7 @@ const DeliveryChoiceClient = ({
   };
 
   const handleContinue = () => {
-    router.push("/order/payment");
+    navigateToNext('delivery-choice');
   };
 
   const handleStoreSelection = () => setStoreSelected(true);

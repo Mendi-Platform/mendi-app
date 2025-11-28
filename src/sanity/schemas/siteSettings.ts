@@ -114,6 +114,42 @@ export default defineType({
       type: 'number',
       initialValue: 5,
     }),
+    // Order Flow Configuration
+    defineField({
+      name: 'orderFlowConfig',
+      title: 'Order Flow Configuration',
+      type: 'object',
+      fields: [
+        {
+          name: 'startStep',
+          title: 'Starting Step',
+          type: 'reference',
+          to: [{ type: 'orderFlowStep' }],
+          description: 'First step users see (/order/garment)'
+        },
+        {
+          name: 'confirmationStep',
+          title: 'Confirmation Step',
+          type: 'reference',
+          to: [{ type: 'orderFlowStep' }],
+          description: 'Final confirmation page'
+        },
+        {
+          name: 'allSteps',
+          title: 'All Steps (for reference)',
+          type: 'array',
+          of: [{ type: 'reference', to: [{ type: 'orderFlowStep' }] }],
+          description: 'All available steps in default order'
+        },
+        {
+          name: 'stepGroups',
+          title: 'Step Groups',
+          type: 'array',
+          of: [{ type: 'reference', to: [{ type: 'orderStepGroup' }] }],
+          description: 'Ordered list of step groups'
+        }
+      ]
+    }),
   ],
   preview: {
     prepare() {

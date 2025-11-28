@@ -25,4 +25,7 @@ export default defineConfig({
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({defaultApiVersion: apiVersion}),
   ],
+  deployment: {
+    appId: 'zma50v2mygln5uaa6bi212o0',
+  },
 })

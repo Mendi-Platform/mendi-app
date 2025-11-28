@@ -127,3 +127,59 @@ export async function getRepairPrices(): Promise<SanityRepairPrice[]> {
 export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
   return client.fetch(getSiteSettingsQuery, {}, { next: { revalidate: 60 } });
 }
+
+export const getOrderFlowQuery = groq`*[_type == "siteSettings"][0]{
+  orderFlowConfig {
+    "startStepSlug": startStep->slug.current,
+    "confirmationStepSlug": confirmationStep->slug.current,
+    "allSteps": *[_type == "orderFlowStep"] | order(defaultOrder asc) {
+      _id,
+      slug,
+      label { nb, en },
+      "stepGroup": stepGroupId-> {
+        _id,
+        name,
+        label { nb, en },
+        order,
+        color
+      },
+      defaultOrder,
+      componentType,
+      isOptional,
+      skipConditions[] {
+        formField,
+        operator,
+        values
+      },
+      nextStepRules[] {
+        conditions[] {
+          formField,
+          operator,
+          values
+        },
+        "nextStepSlug": nextStep->slug.current,
+        priority,
+        description
+      },
+      "defaultNextStepSlug": defaultNextStep->slug.current
+    },
+    "stepGroups": *[_type == "orderStepGroup"] | order(order asc) {
+      _id,
+      name,
+      label { nb, en },
+      order,
+      color
+    }
+  }
+}`;
+
+export async function getOrderFlow(): Promise<{
+  orderFlowConfig: {
+    startStepSlug: string;
+    confirmationStepSlug: string;
+    allSteps: import('./types').OrderFlowStepExpanded[];
+    stepGroups: import('./types').SanityOrderStepGroup[];
+  };
+} | null> {
+  return client.fetch(getOrderFlowQuery, {}, { next: { revalidate: 60 } });
+}

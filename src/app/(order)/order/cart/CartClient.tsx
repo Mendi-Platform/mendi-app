@@ -1,20 +1,26 @@
 "use client";
 
 import CategoryCard from "@/components/ui/categoryCard";
-import { LinkButton } from "@/components/ui/button";
 import { useState } from "react";
 import type { FormData, GarmentSlug } from "@/types/formData";
 import AddButton from "@/components/ui/add-button";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
-import type { SanityPricing, SanitySiteSettings, SanityGarment } from "@/sanity/lib/types";
+import type { SanityPricing, SanitySiteSettings, SanityGarment, OrderFlowStepExpanded, SanityOrderStepGroup } from "@/sanity/lib/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useOrderNavigation } from "@/hooks/useOrderNavigation";
 
 interface CartClientProps {
   pricing: SanityPricing | null;
   siteSettings: SanitySiteSettings | null;
   garments: SanityGarment[];
+  orderFlowConfig: {
+    startStepSlug: string;
+    confirmationStepSlug: string;
+    allSteps: OrderFlowStepExpanded[];
+    stepGroups: SanityOrderStepGroup[];
+  } | null;
 }
 
 // Helper to get logo URL from garments array
@@ -59,12 +65,14 @@ const CartClient = ({
   pricing,
   siteSettings,
   garments,
+  orderFlowConfig,
 }: CartClientProps) => {
   const { language } = useLanguage();
   const { cart, removeFromCart, updateFormData, setEditingId } = useCart();
   const { showToast } = useToast();
   const [activeId, setActiveId] = useState<string | null>(null);
   const router = useRouter();
+  const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
   // Get colors from site settings or use defaults
   const colors = {
@@ -173,7 +181,13 @@ const CartClient = ({
         </span>
         <span className="text-base font-medium">{subtotal} kr</span>
       </div>
-      <LinkButton label={labels.toCheckout} link="/order/checkout" />
+      <button
+        type="button"
+        onClick={() => navigateToNext('cart')}
+        className="block w-full text-center py-2.5 rounded-[20px] bg-[#006EFF] text-white hover:opacity-70 text-xl font-semibold"
+      >
+        {labels.toCheckout}
+      </button>
     </div>
   );
 };

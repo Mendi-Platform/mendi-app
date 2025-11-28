@@ -1,11 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Check } from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
 
 const OrderSteps = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { language } = useLanguage();
 
   const labels = {
@@ -29,6 +30,14 @@ const OrderSteps = () => {
     cart: language === "nb" ? "Handlekurv" : "Cart",
     deliveryChoice: language === "nb" ? "Leveringsvalg" : "Delivery Choice",
     checkout: language === "nb" ? "Kasse" : "Checkout",
+    // Modal
+    goBackTitle: language === "nb" ? "Gå tilbake?" : "Go back?",
+    goBackMessage: language === "nb"
+      ? "Du kan gå tilbake og endre informasjonen din når som helst."
+      : "You can go back and change your information at any time.",
+    cancel: language === "nb" ? "Avbryt" : "Cancel",
+    goBack: language === "nb" ? "Gå tilbake" : "Go back",
+    previous: language === "nb" ? "Forrige" : "Previous",
   };
 
   // Define detailed order flow with labels
@@ -68,8 +77,26 @@ const OrderSteps = () => {
   const step2Complete = currentPage?.step > 2;
   const currentStep = currentPage?.step || 1;
 
+  // Handle navigation
+  const handleStepClick = (step: number) => {
+    if (step < currentStep) {
+      // Going back - find the first page of that step
+      const targetPage = orderFlow.find((page) => page.step === step);
+      if (targetPage) {
+        router.push(targetPage.path);
+      }
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      const previousPage = orderFlow[currentIndex - 1];
+      router.push(previousPage.path);
+    }
+  };
+
   return (
-    <div className="mb-8 max-w-2xl mx-auto">
+    <div className="mb-8 max-w-md lg:max-w-4xl mx-auto">
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="h-1.5 bg-bg-default rounded-full overflow-hidden">
@@ -78,81 +105,19 @@ const OrderSteps = () => {
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
-        <div className="mt-2 text-xs text-text-secondary text-center">
-          {currentPage?.label} ({currentIndex + 1}/{orderFlow.length})
-        </div>
-      </div>
-
-      {/* Step Indicator */}
-      <div className="flex items-center justify-between">
-        {/* Step 1: Order Details */}
-        <div className="flex items-center flex-1">
-          <div className="flex flex-col items-center flex-1">
-            <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-all ${
-                step1Complete
-                  ? "bg-brand-primary text-white"
-                  : currentStep === 1
-                  ? "bg-brand-primary text-white"
-                  : "bg-bg-default text-text-secondary border-2 border-border-default"
-              }`}
+        <div className="mt-2 flex items-center justify-between text-xs">
+          {currentIndex > 0 && (
+            <button
+              onClick={handlePrevious}
+              className="flex items-center gap-1 text-brand-primary hover:text-brand-primary-hover transition-colors"
             >
-              {step1Complete ? <Check size={18} /> : "1"}
-            </div>
-            <span
-              className={`mt-2 text-xs font-medium text-center ${
-                currentStep === 1 || step1Complete ? "text-text-primary" : "text-text-secondary"
-              }`}
-            >
-              {labels.orderDetails}
-            </span>
+              <ChevronLeft size={14} />
+              {labels.previous}
+            </button>
+          )}
+          <div className={`text-text-secondary ${currentIndex === 0 ? "w-full text-center" : "ml-auto"}`}>
+            {currentPage?.label} ({Math.round(progressPercentage)}%)
           </div>
-          <div className={`h-0.5 flex-1 -mt-6 ${step1Complete ? "bg-brand-primary" : "bg-border-default"}`} />
-        </div>
-
-        {/* Step 2: Delivery */}
-        <div className="flex items-center flex-1">
-          <div className="flex flex-col items-center flex-1">
-            <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-all ${
-                step2Complete
-                  ? "bg-brand-primary text-white"
-                  : currentStep === 2
-                  ? "bg-brand-primary text-white"
-                  : "bg-bg-default text-text-secondary border-2 border-border-default"
-              }`}
-            >
-              {step2Complete ? <Check size={18} /> : "2"}
-            </div>
-            <span
-              className={`mt-2 text-xs font-medium text-center ${
-                currentStep === 2 || step2Complete ? "text-text-primary" : "text-text-secondary"
-              }`}
-            >
-              {labels.delivery}
-            </span>
-          </div>
-          <div className={`h-0.5 flex-1 -mt-6 ${step2Complete ? "bg-brand-primary" : "bg-border-default"}`} />
-        </div>
-
-        {/* Step 3: Payment */}
-        <div className="flex flex-col items-center flex-1">
-          <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition-all ${
-              currentStep === 3
-                ? "bg-brand-primary text-white"
-                : "bg-bg-default text-text-secondary border-2 border-border-default"
-            }`}
-          >
-            3
-          </div>
-          <span
-            className={`mt-2 text-xs font-medium text-center ${
-              currentStep === 3 ? "text-text-primary" : "text-text-secondary"
-            }`}
-          >
-            {labels.payment}
-          </span>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ interface ExpandableButtonOptionProps {
   label: string;
   subText?: string;
   price?: number | string;
-  logo?: StaticImageData;
+  logo?: StaticImageData | string;
   active?: boolean;
   collapsed?: boolean;
   options?: OptionItem[];

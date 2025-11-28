@@ -1,7 +1,7 @@
 "use client";
 
 import { LinkButton } from "@/components/ui/button";
-import ButtonOption from "@/components/ui/buttonOption";
+import GridButtonOption from "@/components/ui/gridButtonOption";
 import { useCart } from "@/contexts/CartContext";
 import type { SanityGarment } from "@/sanity/lib/types";
 import { getLocalizedValue } from "@/sanity/lib/types";
@@ -39,9 +39,9 @@ const GarmentPageClient = ({ garments }: GarmentPageClientProps) => {
       <h1 className="font-medium text-lg mb-11">
         {labels.title}
       </h1>
-      <div className="flex flex-col gap-3.5 mb-14">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-14">
         {garments.map((garment) => (
-          <ButtonOption
+          <GridButtonOption
             key={garment._id}
             label={getLocalizedValue(garment.label, language)}
             logo={garment.icon}

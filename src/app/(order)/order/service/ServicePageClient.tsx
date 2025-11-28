@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonOption from "@/components/ui/buttonOption";
+import GridButtonOption from "@/components/ui/gridButtonOption";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import type { SanityRepairType } from "@/sanity/lib/types";
@@ -61,9 +61,9 @@ const ServicePageClient = ({ repairTypes }: ServicePageClientProps) => {
       <h1 className="font-medium text-lg mb-11">
         {labels.title}
       </h1>
-      <div className="flex flex-col gap-3.5 mb-14">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-14">
         {filteredRepairTypes.map((repairType) => (
-          <ButtonOption
+          <GridButtonOption
             key={repairType._id}
             label={getLocalizedValue(repairType.label, language)}
             active={formData.repairTypeSlug === repairType.slug.current}

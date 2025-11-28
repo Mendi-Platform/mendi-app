@@ -139,12 +139,12 @@ const CartClient = ({
   };
 
   return (
-    <div className="w-full max-w-md lg:max-w-2xl mx-auto px-4 py-6">
+    <div className="w-full">
       <h1 className="font-medium text-lg mb-1">{labels.cartTitle} ({allCartItems.length})</h1>
       <p className="mb-6 text-sm font-normal" style={{ color: colors.textSecondary }}>
         {labels.subtitle}
       </p>
-      <div className="flex flex-col gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {allCartItems.map(item => (
           <CategoryCard
             key={item.id}

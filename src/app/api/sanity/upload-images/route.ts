@@ -35,10 +35,10 @@ const imageMapping: ImageMapping[] = [
   { documentId: 'garment-dress', documentType: 'garment', fieldName: 'damageMarkerBack', imagePath: 'icons/mark-damage/back-suit.svg' },
   { documentId: 'garment-outerwear', documentType: 'garment', fieldName: 'damageMarkerBack', imagePath: 'icons/mark-damage/back-coat.svg' },
 
-  // Site settings branding
-  { documentId: 'siteSettings', documentType: 'siteSettings', fieldName: 'logo', imagePath: '../logo/mendi-app.svg' },
-  { documentId: 'siteSettings', documentType: 'siteSettings', fieldName: 'questionIcon', imagePath: 'icons/question-icon.svg' },
-  { documentId: 'siteSettings', documentType: 'siteSettings', fieldName: 'cartIcon', imagePath: 'icons/cart-icon.svg' },
+  // Site settings branding - Note: Run upload-site-settings separately after creating the siteSettings document
+  // { documentId: 'site-settings-id', documentType: 'siteSettings', fieldName: 'logo', imagePath: 'logo/mendi-app.svg' },
+  // { documentId: 'site-settings-id', documentType: 'siteSettings', fieldName: 'questionIcon', imagePath: 'icons/question-icon.svg' },
+  // { documentId: 'site-settings-id', documentType: 'siteSettings', fieldName: 'cartIcon', imagePath: 'icons/cart-icon.svg' },
 
   // Delivery option logos
   { documentId: 'delivery-posten', documentType: 'deliveryOption', fieldName: 'logo', imagePath: 'icons/posten-logo.svg' },

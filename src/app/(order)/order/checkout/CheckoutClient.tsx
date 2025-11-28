@@ -490,8 +490,8 @@ const CheckoutClient = ({
   const selectedAddress = savedAddresses.find((addr) => addr.id === selectedAddressId);
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen">
+      <div className="max-w-md lg:max-w-4xl mx-auto">
         {/* Go Back Button */}
         <button
           type="button"

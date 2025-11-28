@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getOrderFlow } from '@/sanity/lib/queries';
-import UnifiedOrderClient from '@/components/order/UnifiedOrderClient';
+import SharedOrderClient from '@/components/order/SharedOrderClient';
 import { fetchDataForSection } from '@/lib/fetchOrderData';
 
 interface PageProps {
@@ -43,7 +43,7 @@ export default async function DynamicOrderPage({ params }: PageProps) {
   const sectionData = await fetchDataForSection(slug);
 
   return (
-    <UnifiedOrderClient
+    <SharedOrderClient
       slug={slug}
       orderFlowConfig={orderFlowConfig}
       {...sectionData}

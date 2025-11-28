@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { OrderFlowStepExpanded, SanityOrderStepGroup } from '@/sanity/lib/types';
 import { SECTION_LOADERS, type SectionComponent } from '@/lib/orderSectionConfig';
 
-interface UnifiedOrderClientProps {
+interface SharedOrderClientProps {
   slug: string;
   orderFlowConfig: {
     startStepSlug: string;
@@ -15,11 +15,11 @@ interface UnifiedOrderClientProps {
   [key: string]: unknown; // Additional data passed from server
 }
 
-export default function UnifiedOrderClient({
+export default function SharedOrderClient({
   slug,
   orderFlowConfig,
   ...sectionData
-}: UnifiedOrderClientProps) {
+}: SharedOrderClientProps) {
   const [SectionComponent, setSectionComponent] = useState<SectionComponent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

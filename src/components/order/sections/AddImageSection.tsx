@@ -17,10 +17,12 @@ interface AddImageSectionProps {
 
 export default function AddImageSection({ orderFlowConfig }: AddImageSectionProps) {
   const { language } = useLanguage();
-  const { updateFormField } = useCart();
+  const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    formData.repairDetails.images?.[0] || null
+  );
 
   const labels = {
     title: language === 'nb' ? 'Legg til bilde:' : 'Add image:',
@@ -39,7 +41,7 @@ export default function AddImageSection({ orderFlowConfig }: AddImageSectionProp
       reader.onloadend = () => {
         const base64 = reader.result as string;
         setImagePreview(base64);
-        updateFormField('imageUrl', base64);
+        updateRepairDetails('images', [base64]);
       };
       reader.readAsDataURL(file);
     }
@@ -66,7 +68,7 @@ export default function AddImageSection({ orderFlowConfig }: AddImageSectionProp
               type="button"
               onClick={() => {
                 setImagePreview(null);
-                updateFormField('imageUrl', '');
+                updateRepairDetails('images', []);
               }}
               className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-red-50"
             >

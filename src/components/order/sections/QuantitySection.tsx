@@ -17,10 +17,10 @@ interface QuantitySectionProps {
 
 export default function QuantitySection({ orderFlowConfig }: QuantitySectionProps) {
   const { language } = useLanguage();
-  const { formData, updateFormField } = useCart();
+  const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [quantity, setQuantity] = useState(formData.quantity || 1);
+  const [quantity, setQuantity] = useState(formData.repairDetails.quantity || 1);
 
   const labels = {
     title: language === 'nb' ? 'Antall:' : 'Quantity:',
@@ -34,14 +34,14 @@ export default function QuantitySection({ orderFlowConfig }: QuantitySectionProp
     if (quantity > 1) {
       const newQty = quantity - 1;
       setQuantity(newQty);
-      updateFormField('quantity', newQty);
+      updateRepairDetails('quantity', newQty);
     }
   };
 
   const handleIncrease = () => {
     const newQty = quantity + 1;
     setQuantity(newQty);
-    updateFormField('quantity', newQty);
+    updateRepairDetails('quantity', newQty);
   };
 
   const handleContinue = () => {

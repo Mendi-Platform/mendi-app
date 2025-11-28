@@ -20,7 +20,7 @@ export default function OtherRequestSection({ orderFlowConfig }: OtherRequestSec
   const { formData, updateFormField } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [request, setRequest] = useState(formData.otherRequest || '');
+  const [request, setRequest] = useState(formData.description || '');
 
   const labels = {
     title: language === 'nb' ? 'Beskriv din forespørsel:' : 'Describe your request:',
@@ -35,7 +35,7 @@ export default function OtherRequestSection({ orderFlowConfig }: OtherRequestSec
 
   const handleChange = (value: string) => {
     setRequest(value);
-    updateFormField('otherRequest', value);
+    updateFormField('description', value);
   };
 
   const handleContinue = () => {

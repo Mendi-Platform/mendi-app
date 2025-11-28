@@ -15,13 +15,11 @@ interface LeatherTypeSectionProps {
 }
 
 const LEATHER_TYPES = [
-  { slug: 'genuine-leather', labelNb: 'Ekte skinn', labelEn: 'Genuine leather' },
+  { slug: 'normal', labelNb: 'Ekte skinn', labelEn: 'Genuine leather' },
   { slug: 'faux-leather', labelNb: 'Kunstskinn', labelEn: 'Faux leather' },
-  { slug: 'suede', labelNb: 'Semsket skinn', labelEn: 'Suede' },
-  { slug: 'nubuck', labelNb: 'Nubuck', labelEn: 'Nubuck' },
-  { slug: 'patent-leather', labelNb: 'Lakkskinn', labelEn: 'Patent leather' },
-  { slug: 'unknown', labelNb: 'Vet ikke', labelEn: 'Not sure' },
-];
+  { slug: 'silk', labelNb: 'Semsket skinn', labelEn: 'Suede' },
+  { slug: 'thick', labelNb: 'Tykt skinn', labelEn: 'Thick leather' },
+] as const;
 
 export default function LeatherTypeSection({ orderFlowConfig }: LeatherTypeSectionProps) {
   const { language } = useLanguage();
@@ -36,10 +34,10 @@ export default function LeatherTypeSection({ orderFlowConfig }: LeatherTypeSecti
     continue: language === 'nb' ? 'Fortsett' : 'Continue',
   };
 
-  const selectedType = formData.leatherTypeSlug || '';
+  const selectedType = formData.materialSlug || '';
 
-  const handleSelect = (slug: string) => {
-    updateFormField('leatherTypeSlug', slug);
+  const handleSelect = (slug: typeof LEATHER_TYPES[number]['slug']) => {
+    updateFormField('materialSlug', slug);
   };
 
   const handleContinue = () => {

@@ -4,6 +4,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useOrderNavigation } from "@/hooks/useOrderNavigation";
 import type { OrderFlowStepExpanded, SanityOrderStepGroup } from "@/sanity/lib/types";
+import type { TwoOptionSlug } from "@/types/formData";
 
 interface TwoOptionSectionProps {
   orderFlowConfig: {
@@ -16,20 +17,20 @@ interface TwoOptionSectionProps {
 
 export default function TwoOptionSection({ orderFlowConfig }: TwoOptionSectionProps) {
   const { language } = useLanguage();
-  const { formData, updateFormField } = useCart();
+  const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
   const labels = {
     title: language === 'nb' ? 'Velg et alternativ:' : 'Choose an option:',
-    option1: language === 'nb' ? 'Alternativ 1' : 'Option 1',
-    option2: language === 'nb' ? 'Alternativ 2' : 'Option 2',
+    small: language === 'nb' ? 'Liten' : 'Small',
+    big: language === 'nb' ? 'Stor' : 'Big',
     continue: language === 'nb' ? 'Fortsett' : 'Continue',
   };
 
-  const selectedOption = formData.twoOptionChoice || '';
+  const selectedOption = formData.repairDetails.option || '';
 
-  const handleSelect = (option: string) => {
-    updateFormField('twoOptionChoice', option);
+  const handleSelect = (option: TwoOptionSlug) => {
+    updateRepairDetails('option', option);
   };
 
   const handleContinue = () => {
@@ -45,26 +46,26 @@ export default function TwoOptionSection({ orderFlowConfig }: TwoOptionSectionPr
       <div className="flex flex-col gap-4 mb-14">
         <button
           type="button"
-          onClick={() => handleSelect('option1')}
+          onClick={() => handleSelect('small')}
           className={`p-4 rounded-[18px] border-2 text-left transition-all ${
-            selectedOption === 'option1'
+            selectedOption === 'small'
               ? 'border-[#006EFF] bg-[#E3EEFF]'
               : 'border-[#E5E5E5] bg-white hover:border-[#006EFF]/50'
           }`}
         >
-          <span className="font-medium">{labels.option1}</span>
+          <span className="font-medium">{labels.small}</span>
         </button>
 
         <button
           type="button"
-          onClick={() => handleSelect('option2')}
+          onClick={() => handleSelect('big')}
           className={`p-4 rounded-[18px] border-2 text-left transition-all ${
-            selectedOption === 'option2'
+            selectedOption === 'big'
               ? 'border-[#006EFF] bg-[#E3EEFF]'
               : 'border-[#E5E5E5] bg-white hover:border-[#006EFF]/50'
           }`}
         >
-          <span className="font-medium">{labels.option2}</span>
+          <span className="font-medium">{labels.big}</span>
         </button>
       </div>
 

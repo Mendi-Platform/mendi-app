@@ -17,10 +17,10 @@ interface AdditionalDetailsSectionProps {
 
 export default function AdditionalDetailsSection({ orderFlowConfig }: AdditionalDetailsSectionProps) {
   const { language } = useLanguage();
-  const { formData, updateFormField } = useCart();
+  const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [details, setDetails] = useState(formData.additionalDetails || '');
+  const [details, setDetails] = useState(formData.repairDetails.additionalDetails || '');
 
   const labels = {
     title: language === 'nb' ? 'Tilleggsinformasjon:' : 'Additional information:',
@@ -36,7 +36,7 @@ export default function AdditionalDetailsSection({ orderFlowConfig }: Additional
 
   const handleChange = (value: string) => {
     setDetails(value);
-    updateFormField('additionalDetails', value);
+    updateRepairDetails('additionalDetails', value);
   };
 
   const handleContinue = () => {

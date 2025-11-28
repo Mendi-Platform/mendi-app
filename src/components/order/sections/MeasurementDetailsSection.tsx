@@ -17,10 +17,10 @@ interface MeasurementDetailsSectionProps {
 
 export default function MeasurementDetailsSection({ orderFlowConfig }: MeasurementDetailsSectionProps) {
   const { language } = useLanguage();
-  const { formData, updateFormField } = useCart();
+  const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [details, setDetails] = useState(formData.measurementDetails || '');
+  const [details, setDetails] = useState(formData.repairDetails.detailsText || '');
 
   const labels = {
     title: language === 'nb' ? 'Tilleggsdetaljer om mål:' : 'Additional measurement details:',
@@ -36,7 +36,7 @@ export default function MeasurementDetailsSection({ orderFlowConfig }: Measureme
 
   const handleChange = (value: string) => {
     setDetails(value);
-    updateFormField('measurementDetails', value);
+    updateRepairDetails('detailsText', value);
   };
 
   const handleContinue = () => {

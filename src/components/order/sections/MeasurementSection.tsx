@@ -17,10 +17,10 @@ interface MeasurementSectionProps {
 
 export default function MeasurementSection({ orderFlowConfig }: MeasurementSectionProps) {
   const { language } = useLanguage();
-  const { formData, updateFormField } = useCart();
+  const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [measurement, setMeasurement] = useState(formData.measurement || '');
+  const [measurement, setMeasurement] = useState(formData.repairDetails.measurements || '');
 
   const labels = {
     title: language === 'nb' ? 'Oppgi mål:' : 'Enter measurement:',
@@ -33,7 +33,7 @@ export default function MeasurementSection({ orderFlowConfig }: MeasurementSecti
 
   const handleChange = (value: string) => {
     setMeasurement(value);
-    updateFormField('measurement', value);
+    updateRepairDetails('measurements', value);
   };
 
   const handleContinue = () => {

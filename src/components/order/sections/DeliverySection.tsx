@@ -20,6 +20,53 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useOrderNavigation } from "@/hooks/useOrderNavigation";
 import type { GarmentSlug, RepairTypeSlug } from "@/types/formData";
 
+const getDeliveryStatusLabel = (
+  language: 'nb' | 'en',
+  selectedDelivery: DeliveryType,
+  storeLocations: SanityStoreLocation[],
+  selectedStore: string,
+  storeSelected: boolean,
+  postenOptions: SanityPostenOption[],
+  selectedPosten: string,
+  postenSelected: boolean,
+  syerInput: string,
+  syerSubmitted: boolean,
+  postenOption?: SanityDeliveryOption,
+) => {
+  const fallback = language === 'nb' ? 'Ingen leveringsmåte valgt' : 'No delivery method selected';
+
+  if (selectedDelivery === DeliveryType.PickupPoint) {
+    if (storeSelected && selectedStore) {
+      const storeName = storeLocations.find(store => store._id === selectedStore)?.name;
+      if (storeName) {
+        return language === 'nb' ? `Drop-off i ${storeName}` : `Drop-off at ${storeName}`;
+      }
+    }
+    return language === 'nb' ? 'Velg butikk' : 'Choose store';
+  }
+
+  if (selectedDelivery === DeliveryType.Posten) {
+    if (postenSelected && selectedPosten) {
+      const postenChoice = postenOptions.find(opt => opt._id === selectedPosten);
+      const choiceName = getLocalizedValue(postenChoice?.name, language);
+      if (choiceName) {
+        return choiceName;
+      }
+    }
+    const defaultLabel = getLocalizedValue(postenOption?.name, language) || 'Posten';
+    return language === 'nb' ? `Velg ${defaultLabel}` : `Choose ${defaultLabel}`;
+  }
+
+  if (selectedDelivery === DeliveryType.Syer) {
+    if (syerSubmitted && syerInput.trim().length > 0) {
+      return syerInput.trim();
+    }
+    return language === 'nb' ? 'Møt en syer' : 'Meet a tailor';
+  }
+
+  return fallback;
+};
+
 // Helper to get garment label from slug
 const getGarmentLabelFromSlug = (slug: GarmentSlug | undefined, lang: 'nb' | 'en'): string => {
   if (!slug) return '';
@@ -275,6 +322,26 @@ export default function DeliverySection({
 
   const minPostenPrice = Math.min(...postenOptions.map(o => o.price));
 
+  const deliveryStatusLabel = getDeliveryStatusLabel(
+    language,
+    selectedDelivery,
+    storeLocations,
+    selectedStore,
+    storeSelected,
+    postenOptions,
+    selectedPosten,
+    postenSelected,
+    syerInput,
+    syerSubmitted,
+    postenOption,
+  );
+
+  const currentStepLabel = steps?.[currentStep - 1] || (language === 'nb' ? 'Levering' : 'Delivery');
+  const nextStepLabel = steps?.[currentStep] || (language === 'nb' ? 'Betaling' : 'Payment');
+  const shippingChipLabel = selectedDelivery === DeliveryType.None
+    ? `${language === 'nb' ? 'Fra' : 'From'} ${minPostenPrice} kr`
+    : (shippingCost === 0 ? (language === 'nb' ? 'Gratis frakt' : 'Free shipping') : `${shippingCost} kr`);
+
   return (
     <CheckoutWizard
       steps={steps}
@@ -283,111 +350,224 @@ export default function DeliverySection({
       shippingCost={selectedDelivery !== DeliveryType.None ? shippingCost : undefined}
       shippingLabel={language === 'nb' ? "Frakt" : "Shipping"}
     >
-      <h1 className="font-medium text-lg mb-8">
-        {language === 'nb' ? 'Velg leveringsmåte' : 'Choose delivery method'}
-      </h1>
-
-      <div className="flex flex-col gap-4 mb-8">
-        {/* Drop-off i butikk */}
-        <ExpandableButtonOption
-          label={getLocalizedValue(pickupOption?.name, language) || (language === 'nb' ? 'Drop-off i butikk' : 'Drop-off at store')}
-          price={pickupOption?.price === 0 ? (language === 'nb' ? 'Gratis' : 'Free') : `${pickupOption?.price} kr`}
-          active={selectedDelivery === DeliveryType.PickupPoint}
-          collapsed={storeSelected}
-          options={storeOptions}
-          selectedOption={selectedStore}
-          onMainClick={handleDropoffClick}
-          onOptionSelect={setSelectedStore}
-          onConfirm={handleStoreSelection}
-          onEdit={handleEditStore}
-          onDelete={handleDeleteStore}
-        />
-
-        {/* Møt syer */}
-        <ButtonWithTextInput
-          label={getLocalizedValue(syerOption?.name, language) || (language === 'nb' ? 'Møt syer' : 'Meet tailor')}
-          subText={getLocalizedValue(syerOption?.description, language) || ''}
-          price={syerOption?.price || 99}
-          inputLabel={language === 'nb' ? 'Forslag til møtested' : 'Suggested meeting place'}
-          active={selectedDelivery === DeliveryType.Syer}
-          submitted={syerSubmitted}
-          inputValue={syerInput}
-          inputPlaceholder={language === 'nb' ? 'Ved tigeren på Oslo S' : 'At the tiger at Oslo S'}
-          onMainClick={handleSyerClick}
-          onInputChange={handleSyerInputChange}
-          onInputSubmit={handleSyerInputSubmit}
-          onEdit={handleSyerEdit}
-          onDelete={handleSyerDelete}
-        />
-
-        {/* Posten */}
-        <ExpandableButtonOption
-          label=""
-          price={`${language === 'nb' ? 'Fra' : 'From'} ${minPostenPrice} kr`}
-          logo={postenOption?.logo}
-          active={selectedDelivery === DeliveryType.Posten}
-          collapsed={postenSelected}
-          options={postenOptionsFormatted}
-          selectedOption={selectedPosten}
-          onMainClick={handlePostenClick}
-          onOptionSelect={setSelectedPosten}
-          onConfirm={handlePostenSelection}
-          onEdit={handleEditPosten}
-          onDelete={handleDeletePosten}
-        />
-      </div>
-
-      {/* Mobile Order Summary */}
-      <div className="pt-4 mb-6 lg:hidden">
-        <div className="space-y-2 mb-4">
-          {allItems.map((item, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <span className="text-sm" style={{ color: colors.textSecondary }}>
-                {getRepairTypeLabelFromSlug(item.repairTypeSlug, language)} - {getGarmentLabelFromSlug(item.garmentSlug, language)}
+      <div className="space-y-6">
+        <div className="rounded-3xl border border-gray-100 bg-gradient-to-br from-white via-slate-50 to-[#E7F1FF] shadow-sm p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <span
+                className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-[0.08em]"
+                style={{ color: colors.primary }}
+              >
+                {language === 'nb' ? 'Steg 2: Levering' : 'Step 2: Delivery'}
               </span>
-              <span className="text-sm">{item.price} kr</span>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  {language === 'nb' ? 'Hvordan vil du levere plaggene?' : 'How do you want to hand over your garments?'}
+                </h1>
+                <p className="text-sm text-gray-600 max-w-2xl">
+                  {language === 'nb'
+                    ? 'Velg løsningen som passer dagen din - vi oppdaterer totalsummen og oppsummeringen med én gang.'
+                    : 'Pick the option that fits your day - the total and summary update instantly.'}
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
-
-        {selectedDelivery !== DeliveryType.None && (
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm" style={{ color: colors.textSecondary }}>
-              {language === 'nb' ? 'Frakt' : 'Shipping'}
-            </span>
-            <span className="text-sm">
-              {shippingCost === 0 ? (language === 'nb' ? 'Gratis' : 'Free') : `${shippingCost} kr`}
-            </span>
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+              <div className="rounded-2xl border border-gray-200 bg-white/90 px-4 py-3 shadow-sm min-w-[220px]">
+                <p className="text-xs uppercase tracking-[0.08em] text-gray-500">
+                  {language === 'nb' ? 'Valgt alternativ' : 'Selected option'}
+                </p>
+                <p className="text-sm font-semibold text-gray-900 break-words mt-1">
+                  {deliveryStatusLabel}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-white/90 px-4 py-3 shadow-sm min-w-[150px]">
+                <p className="text-xs uppercase tracking-[0.08em] text-gray-500">
+                  {language === 'nb' ? 'Frakt' : 'Shipping'}
+                </p>
+                <p className="text-sm font-semibold text-gray-900 mt-1">{shippingChipLabel}</p>
+                <p className="text-[11px] text-gray-500">
+                  {language === 'nb' ? 'Oppdateres når du gjør et valg' : 'Updates as soon as you choose'}
+                </p>
+              </div>
+            </div>
           </div>
-        )}
 
-        <div className="flex justify-between items-center border-t border-gray-200 pt-2">
-          <span className="font-medium">
-            {language === 'nb' ? 'Total sum' : 'Total'}{' '}
-            <span className="text-xs font-normal" style={{ color: colors.textSecondary }}>
-              ({language === 'nb' ? 'inkl. mva.' : 'incl. VAT'})
-            </span>
-          </span>
-          <span className="font-medium">{total} kr</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+            <div className="rounded-2xl border border-gray-200 bg-white/90 px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.08em] text-gray-500">
+                {language === 'nb' ? 'Plagg i bestilling' : 'Items in order'}
+              </p>
+              <p className="text-base font-semibold text-gray-900 mt-1">
+                {allItems.length} {language === 'nb' ? 'stk' : 'pcs'}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-white/90 px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.08em] text-gray-500">
+                {language === 'nb' ? 'Nå' : 'Current step'}
+              </p>
+              <p className="text-base font-semibold text-gray-900 mt-1">{currentStepLabel}</p>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-white/90 px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.08em] text-gray-500">
+                {language === 'nb' ? 'Neste' : 'Next'}
+              </p>
+              <p className="text-base font-semibold text-gray-900 mt-1">{nextStepLabel}</p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <button
-        type="button"
-        onClick={handleContinue}
-        disabled={!canContinue}
-        className="block w-full text-center py-2.5 rounded-[20px] text-xl font-semibold transition-opacity"
-        style={{
-          backgroundColor: canContinue ? colors.primary : 'white',
-          color: canContinue ? 'white' : colors.textDisabled,
-          border: canContinue ? 'none' : '1px solid rgba(0,0,0,0.3)',
-          cursor: canContinue ? 'pointer' : 'auto',
-        }}
-        onMouseOver={(e) => canContinue && (e.currentTarget.style.opacity = '0.7')}
-        onMouseOut={(e) => canContinue && (e.currentTarget.style.opacity = '1')}
-      >
-        {language === 'nb' ? 'Til betaling' : 'To payment'}
-      </button>
+        <div className="rounded-3xl border border-gray-200 bg-white shadow-sm">
+          <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-gray-100">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-[0.08em] text-gray-500">
+                {language === 'nb' ? 'Leveringsvalg' : 'Delivery options'}
+              </p>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                {language === 'nb' ? 'Velg leveringsmåte' : 'Choose delivery method'}
+              </h2>
+              <p className="text-sm text-gray-600">
+                {language === 'nb'
+                  ? 'Se tilgjengelige alternativer under. Du kan alltid gå tilbake og endre før du bekrefter.'
+                  : 'Browse the options below. You can always adjust before confirming.'}
+              </p>
+            </div>
+            <div className="hidden sm:flex flex-col items-end gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: colors.primary }}
+                />
+                <span>{language === 'nb' ? 'Oppsummering oppdateres' : 'Summary updates live'}</span>
+              </div>
+              <span className="text-xs text-gray-500">
+                {language === 'nb' ? 'Totalsummen justeres med frakten du velger' : 'Total reflects the shipping you choose'}
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 space-y-4">
+            {/* Drop-off i butikk */}
+            <ExpandableButtonOption
+              label={getLocalizedValue(pickupOption?.name, language) || (language === 'nb' ? 'Drop-off i butikk' : 'Drop-off at store')}
+              price={pickupOption?.price === 0 ? (language === 'nb' ? 'Gratis' : 'Free') : `${pickupOption?.price} kr`}
+              active={selectedDelivery === DeliveryType.PickupPoint}
+              collapsed={storeSelected}
+              options={storeOptions}
+              selectedOption={selectedStore}
+              onMainClick={handleDropoffClick}
+              onOptionSelect={setSelectedStore}
+              onConfirm={handleStoreSelection}
+              onEdit={handleEditStore}
+              onDelete={handleDeleteStore}
+            />
+
+            {/* Møt syer */}
+            <ButtonWithTextInput
+              label={getLocalizedValue(syerOption?.name, language) || (language === 'nb' ? 'Møt syer' : 'Meet tailor')}
+              subText={getLocalizedValue(syerOption?.description, language) || ''}
+              price={syerOption?.price || 99}
+              inputLabel={language === 'nb' ? 'Forslag til møtested' : 'Suggested meeting place'}
+              active={selectedDelivery === DeliveryType.Syer}
+              submitted={syerSubmitted}
+              inputValue={syerInput}
+              inputPlaceholder={language === 'nb' ? 'Ved tigeren på Oslo S' : 'At the tiger at Oslo S'}
+              onMainClick={handleSyerClick}
+              onInputChange={handleSyerInputChange}
+              onInputSubmit={handleSyerInputSubmit}
+              onEdit={handleSyerEdit}
+              onDelete={handleSyerDelete}
+            />
+
+            {/* Posten */}
+            <ExpandableButtonOption
+              label=""
+              price={`${language === 'nb' ? 'Fra' : 'From'} ${minPostenPrice} kr`}
+              logo={postenOption?.logo}
+              active={selectedDelivery === DeliveryType.Posten}
+              collapsed={postenSelected}
+              options={postenOptionsFormatted}
+              selectedOption={selectedPosten}
+              onMainClick={handlePostenClick}
+              onOptionSelect={setSelectedPosten}
+              onConfirm={handlePostenSelection}
+              onEdit={handleEditPosten}
+              onDelete={handleDeletePosten}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-slate-50/70 p-4 flex items-start gap-3">
+          <div
+            className="h-10 w-10 flex items-center justify-center rounded-xl text-sm font-semibold"
+            style={{ backgroundColor: colors.primary, color: 'white' }}
+          >
+            i
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-gray-900">
+              {language === 'nb' ? 'Oppdateres fortløpende' : 'Live updates'}
+            </p>
+            <p className="text-sm text-gray-600">
+              {language === 'nb'
+                ? 'Oppsummeringen viser valgt levering og frakt så fort du markerer et alternativ.'
+                : 'The summary reflects your delivery and shipping choice as soon as you pick it.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile Order Summary */}
+        <div className="lg:hidden">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 space-y-3">
+            <div className="space-y-2">
+              {allItems.map((item, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="text-sm" style={{ color: colors.textSecondary }}>
+                    {getRepairTypeLabelFromSlug(item.repairTypeSlug, language)} - {getGarmentLabelFromSlug(item.garmentSlug, language)}
+                  </span>
+                  <span className="text-sm">{item.price} kr</span>
+                </div>
+              ))}
+            </div>
+
+            {selectedDelivery !== DeliveryType.None && (
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-sm" style={{ color: colors.textSecondary }}>
+                  {language === 'nb' ? 'Frakt' : 'Shipping'}
+                </span>
+                <span className="text-sm">
+                  {shippingCost === 0 ? (language === 'nb' ? 'Gratis' : 'Free') : `${shippingCost} kr`}
+                </span>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center border-t border-gray-200 pt-3">
+              <span className="font-medium">
+                {language === 'nb' ? 'Total sum' : 'Total'}{' '}
+                <span className="text-xs font-normal" style={{ color: colors.textSecondary }}>
+                  ({language === 'nb' ? 'inkl. mva.' : 'incl. VAT'})
+                </span>
+              </span>
+              <span className="font-medium">{total} kr</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleContinue}
+          disabled={!canContinue}
+          className={`w-full rounded-[18px] text-lg font-semibold transition-all duration-150 ${canContinue ? 'shadow-lg hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2' : 'border border-gray-200 bg-white cursor-not-allowed'}`}
+          style={{
+            backgroundColor: canContinue ? colors.primary : 'white',
+            color: canContinue ? 'white' : colors.textDisabled,
+            border: canContinue ? 'none' : '1px solid rgba(0,0,0,0.08)',
+          }}
+        >
+          <span className="block w-full py-3">
+            {language === 'nb' ? 'Til betaling' : 'To payment'}
+          </span>
+        </button>
+      </div>
     </CheckoutWizard>
   );
 }

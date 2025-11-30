@@ -496,217 +496,315 @@ export default function CheckoutSection({
     goBack: language === "nb" ? "Gå tilbake" : "Go back",
   };
 
+  const steps: { key: CheckoutSectionType; label: string; complete: boolean }[] = [
+    { key: "address", label: labels.address, complete: addressCompleted },
+    { key: "delivery", label: labels.delivery, complete: deliveryCompleted },
+    { key: "payment", label: labels.payment, complete: canPay },
+  ];
+  const currentStepIndex = Math.max(0, steps.findIndex((step) => step.key === activeSection));
+  const progressPercent = ((currentStepIndex + 1) / steps.length) * 100;
+
+  const deliveryTitle = (() => {
+    if (selectedDelivery === DeliveryType.PickupPoint) {
+      return (
+        getLocalizedValue(pickupOption?.name, language) ||
+        (language === "nb" ? "Drop-off i butikk" : "Drop-off at store")
+      );
+    }
+    if (selectedDelivery === DeliveryType.Posten) {
+      return (
+        getLocalizedValue(postenDeliveryOption?.name, language) ||
+        (language === "nb" ? "Posten" : "Posten")
+      );
+    }
+    if (selectedDelivery === DeliveryType.Syer) {
+      return (
+        getLocalizedValue(syerOption?.name, language) ||
+        (language === "nb" ? "Møt syer" : "Meet tailor")
+      );
+    }
+    return language === "nb" ? "Levering ikke valgt" : "Delivery not selected";
+  })();
+
+  const deliverySummaryLine = (() => {
+    if (selectedDelivery === DeliveryType.PickupPoint && selectedStore) {
+      const store = storeOptionsFormatted.find((option) => option.id === selectedStore);
+      return store?.name || deliveryTitle;
+    }
+    if (selectedDelivery === DeliveryType.Posten && selectedPosten) {
+      const posten = postenOptionsFormatted.find((option) => option.id === selectedPosten);
+      return posten?.name || deliveryTitle;
+    }
+    if (selectedDelivery === DeliveryType.Syer && syerInput) {
+      return syerInput;
+    }
+    return language === "nb" ? "Velg leveringsmåte" : "Choose delivery method";
+  })();
+
+  const shippingLabel =
+    selectedDelivery === DeliveryType.None
+      ? language === "nb"
+        ? "Legg til leveringsmåte"
+        : "Add delivery method"
+      : shippingCost === 0
+        ? labels.free
+        : `${shippingCost} kr`;
+
   // Selected address display
   const selectedAddress = savedAddresses.find((addr) => addr.id === selectedAddressId);
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-md lg:max-w-4xl mx-auto">
-        {/* Go Back Button */}
-        <button
-          type="button"
-          onClick={() => window.history.back()}
-          className="mb-6 py-2 px-4 rounded-lg font-medium border border-border-default bg-white text-text-primary hover:bg-bg-inactive transition-colors inline-flex items-center gap-2"
-        >
-          ← {labels.goBack}
-        </button>
-
-        {/* Main Title */}
-        <h1 className="text-3xl font-semibold tracking-tight mb-8" style={{ color: "var(--color-text-primary)" }}>
-          {labels.title}
-        </h1>
-
-        <div className="space-y-6">
-          {/* Step 1: Address */}
-          <div
-            className={`bg-white rounded-xl overflow-hidden transition-all ${
-              activeSection === "address" ? "shadow-sm border border-border-default" : "border border-border-default"
-            } ${activeSection !== "address" && !addressCompleted ? "opacity-60" : ""}`}
+    <div className="min-h-screen bg-gradient-to-b from-bg-default via-white to-white">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="flex items-center justify-between mb-6">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="py-2 px-4 rounded-lg font-medium border border-border-default bg-white text-text-primary hover:bg-bg-inactive transition-colors inline-flex items-center gap-2 shadow-sm"
           >
-            <button
-              type="button"
-              onClick={() => setActiveSection("address")}
-              className="w-full p-6 md:p-8 flex items-center justify-between"
+            ← {labels.goBack}
+          </button>
+          <div className="hidden md:flex items-center gap-2 text-xs text-text-secondary">
+            <span className="w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
+            <span>{language === "nb" ? "Trygg, kryptert betaling" : "Secure, encrypted checkout"}</span>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-text-primary">
+            {labels.title}
+          </h1>
+          <p className="text-text-secondary mt-2 text-base max-w-2xl">
+            {language === "nb"
+              ? "Fullfør bestillingen i tre enkle steg. Vi lagrer leveringsvalg og adresser for en raskere opplevelse neste gang."
+              : "Complete your order in three quick steps. We keep your delivery picks handy for faster checkouts next time."}
+          </p>
+        </div>
+
+        <div className="mb-8 bg-white/80 backdrop-blur-sm border border-border-default rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-text-primary">
+              {language === "nb" ? "Fremdrift" : "Progress"}
+            </span>
+            <span className="text-xs text-text-secondary">
+              {currentStepIndex + 1}/{steps.length}
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-bg-default overflow-hidden">
+            <div
+              className="h-full bg-brand-primary transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <div className="grid grid-cols-3 text-[11px] uppercase tracking-wide text-text-secondary mt-3">
+            {steps.map((step, index) => (
+              <span
+                key={step.key}
+                className={`flex items-center gap-2 ${index === currentStepIndex ? "text-text-primary font-semibold" : ""}`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full border ${
+                    step.complete ? "bg-brand-primary border-brand-primary" : "border-border-default bg-bg-default"
+                  }`}
+                />
+                {step.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-[2fr,1fr] gap-6 lg:gap-8 items-start">
+          <div className="space-y-6">
+            {/* Step 1: Address */}
+            <div
+              className={`bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden transition-all border ${
+                activeSection === "address" ? "shadow-md border-brand-primary-light/70" : "border-border-default"
+              } ${activeSection !== "address" && !addressCompleted ? "opacity-60" : ""}`}
             >
-              <div className="flex items-center gap-4">
-                {addressCompleted ? (
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-primary text-white">
-                    <Check size={16} />
-                  </span>
-                ) : (
-                  <span
-                    className={`flex items-center justify-center w-8 h-8 rounded-full font-medium text-sm ${
-                      activeSection === "address"
-                        ? "bg-brand-primary text-white"
-                        : "bg-bg-default text-text-secondary border border-border-default"
+              <button
+                type="button"
+                onClick={() => setActiveSection("address")}
+                className="w-full p-6 md:p-8 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-4">
+                  {addressCompleted ? (
+                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-primary text-white">
+                      <Check size={16} />
+                    </span>
+                  ) : (
+                    <span
+                      className={`flex items-center justify-center w-8 h-8 rounded-full font-medium text-sm ${
+                        activeSection === "address"
+                          ? "bg-brand-primary text-white"
+                          : "bg-bg-default text-text-secondary border border-border-default"
+                      }`}
+                    >
+                      1
+                    </span>
+                  )}
+                  <h2
+                    className={`text-xl font-medium tracking-tight ${
+                      activeSection === "address" || addressCompleted ? "text-text-primary" : "text-text-secondary"
                     }`}
                   >
-                    1
-                  </span>
+                    {labels.address}
+                  </h2>
+                </div>
+                {activeSection === "address" ? (
+                  <ChevronUp className="w-5 h-5 text-text-disabled" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-text-disabled" />
                 )}
-                <h2
-                  className={`text-xl font-medium tracking-tight ${
-                    activeSection === "address" || addressCompleted ? "text-text-primary" : "text-text-secondary"
-                  }`}
-                >
-                  {labels.address}
-                </h2>
-              </div>
-              {activeSection === "address" ? (
-                <ChevronUp className="w-5 h-5 text-text-disabled" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-text-disabled" />
-              )}
-            </button>
+              </button>
 
-            {activeSection === "address" && (
-              <div className="px-6 pb-6 md:px-8 md:pb-8">
-                {/* Address completed summary */}
-                {addressCompleted && selectedAddress && !showAddressForm && (
-                  <div className="mb-6 p-4 rounded-lg bg-brand-primary-lighter border border-brand-primary-light">
-                    <div className="flex items-center gap-2 mb-1">
-                      {selectedAddress.addressType === "home" && <Home size={16} className="text-brand-primary" />}
-                      {selectedAddress.addressType === "work" && <Building2 size={16} className="text-brand-primary" />}
-                      {selectedAddress.addressType === "other" && <MapPin size={16} className="text-brand-primary" />}
-                      <span className="text-sm text-brand-primary font-medium">
-                        {getAddressTypeLabel(selectedAddress.addressType, language)}
-                      </span>
+              {activeSection === "address" && (
+                <div className="px-6 pb-6 md:px-8 md:pb-8">
+                  {/* Address completed summary */}
+                  {addressCompleted && selectedAddress && !showAddressForm && (
+                    <div className="mb-6 p-4 rounded-lg bg-brand-primary-lighter border border-brand-primary-light">
+                      <div className="flex items-center gap-2 mb-1">
+                        {selectedAddress.addressType === "home" && <Home size={16} className="text-brand-primary" />}
+                        {selectedAddress.addressType === "work" && <Building2 size={16} className="text-brand-primary" />}
+                        {selectedAddress.addressType === "other" && <MapPin size={16} className="text-brand-primary" />}
+                        <span className="text-sm text-brand-primary font-medium">
+                          {getAddressTypeLabel(selectedAddress.addressType, language)}
+                        </span>
+                      </div>
+                      <div className="font-medium text-text-primary">{selectedAddress.streetAddress}</div>
+                      {selectedAddress.addressAdditional && (
+                        <div className="text-sm text-text-secondary">{selectedAddress.addressAdditional}</div>
+                      )}
+                      <div className="text-sm text-text-secondary">
+                        {selectedAddress.zipCode} {selectedAddress.city}
+                      </div>
                     </div>
-                    <div className="font-medium text-text-primary">{selectedAddress.streetAddress}</div>
-                    {selectedAddress.addressAdditional && (
-                      <div className="text-sm text-text-secondary">{selectedAddress.addressAdditional}</div>
-                    )}
-                    <div className="text-sm text-text-secondary">
-                      {selectedAddress.zipCode} {selectedAddress.city}
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Address list */}
-                {!showAddressForm && savedAddresses.length > 0 && (
-                  <>
-                    <div className="space-y-3 mb-6">
-                      {savedAddresses.map((address) => (
-                        <div
-                          key={address.id}
-                          onClick={() => handleAddressSelect(address.id)}
-                          className={`p-4 rounded-lg cursor-pointer border-2 transition-all ${
-                            selectedAddressId === address.id
-                              ? "border-brand-primary bg-brand-primary-lighter"
-                              : "border-border-default bg-white hover:bg-bg-inactive"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            {address.addressType === "home" && (
-                              <Home size={16} className={selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"} />
-                            )}
-                            {address.addressType === "work" && (
-                              <Building2 size={16} className={selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"} />
-                            )}
-                            {address.addressType === "other" && (
-                              <MapPin size={16} className={selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"} />
-                            )}
-                            <span className={`text-sm font-medium ${selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"}`}>
-                              {getAddressTypeLabel(address.addressType, language)}
-                            </span>
-                          </div>
-                          <div className="font-medium text-text-primary">{address.streetAddress}</div>
-                          <div className="text-sm text-text-secondary">
-                            {address.zipCode} {address.city}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowAddressForm(true);
-                        setEditingAddressId(null);
-                        form.reset();
-                      }}
-                      className="w-full p-4 rounded-lg mb-6 flex items-center justify-center gap-2 border border-border-default bg-white hover:bg-bg-inactive transition-colors"
-                    >
-                      <span className="text-lg text-brand-primary">+</span>
-                      <span className="text-text-primary font-medium">{labels.addNewAddress}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleConfirmAddress}
-                      disabled={!selectedAddressId}
-                      className="w-full py-3.5 px-4 rounded-lg font-medium text-white shadow-sm transition-all focus:ring-4 focus:ring-brand-primary-lighter disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: selectedAddressId ? "var(--color-brand-primary)" : "var(--color-text-disabled)" }}
-                    >
-                      {labels.continue}
-                    </button>
-                  </>
-                )}
-
-                {/* Address form */}
-                {showAddressForm && (
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onAddressSubmit)} className="space-y-5">
-                      {/* Address Type Selector */}
-                      <FormField
-                        control={form.control}
-                        name="addressType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="block text-sm font-medium text-text-secondary mb-3">
-                              {labels.addressType}
-                            </FormLabel>
-                            <div className="grid grid-cols-3 gap-3">
-                              <label className="cursor-pointer">
-                                <input
-                                  type="radio"
-                                  className="hidden peer"
-                                  checked={field.value === "home"}
-                                  onChange={() => field.onChange("home")}
-                                />
-                                <div className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
-                                  field.value === "home"
-                                    ? "border-brand-primary-light bg-brand-primary-lighter text-brand-primary ring-1 ring-brand-primary"
-                                    : "border-border-default bg-white text-text-secondary hover:bg-bg-inactive"
-                                }`}>
-                                  <Home size={16} />
-                                  <span className="text-sm font-medium">{language === "nb" ? "Hjemme" : "Home"}</span>
-                                </div>
-                              </label>
-                              <label className="cursor-pointer">
-                                <input
-                                  type="radio"
-                                  className="hidden peer"
-                                  checked={field.value === "work"}
-                                  onChange={() => field.onChange("work")}
-                                />
-                                <div className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
-                                  field.value === "work"
-                                    ? "border-brand-primary-light bg-brand-primary-lighter text-brand-primary ring-1 ring-brand-primary"
-                                    : "border-border-default bg-white text-text-secondary hover:bg-bg-inactive"
-                                }`}>
-                                  <Building2 size={16} />
-                                  <span className="text-sm font-medium">{language === "nb" ? "Jobb" : "Work"}</span>
-                                </div>
-                              </label>
-                              <label className="cursor-pointer">
-                                <input
-                                  type="radio"
-                                  className="hidden peer"
-                                  checked={field.value === "other"}
-                                  onChange={() => field.onChange("other")}
-                                />
-                                <div className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
-                                  field.value === "other"
-                                    ? "border-brand-primary-light bg-brand-primary-lighter text-brand-primary ring-1 ring-brand-primary"
-                                    : "border-border-default bg-white text-text-secondary hover:bg-bg-inactive"
-                                }`}>
-                                  <MapPin size={16} />
-                                  <span className="text-sm font-medium">{language === "nb" ? "Annet" : "Other"}</span>
-                                </div>
-                              </label>
+                  {/* Address list */}
+                  {!showAddressForm && savedAddresses.length > 0 && (
+                    <>
+                      <div className="space-y-3 mb-6">
+                        {savedAddresses.map((address) => (
+                          <div
+                            key={address.id}
+                            onClick={() => handleAddressSelect(address.id)}
+                            className={`p-4 rounded-lg cursor-pointer border-2 transition-all ${
+                              selectedAddressId === address.id
+                                ? "border-brand-primary bg-brand-primary-lighter shadow-sm"
+                                : "border-border-default bg-white hover:bg-bg-inactive"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              {address.addressType === "home" && (
+                                <Home size={16} className={selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"} />
+                              )}
+                              {address.addressType === "work" && (
+                                <Building2 size={16} className={selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"} />
+                              )}
+                              {address.addressType === "other" && (
+                                <MapPin size={16} className={selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"} />
+                              )}
+                              <span className={`text-sm font-medium ${selectedAddressId === address.id ? "text-brand-primary" : "text-text-secondary"}`}>
+                                {getAddressTypeLabel(address.addressType, language)}
+                              </span>
                             </div>
-                          </FormItem>
-                        )}
-                      />
+                            <div className="font-medium text-text-primary">{address.streetAddress}</div>
+                            <div className="text-sm text-text-secondary">
+                              {address.zipCode} {address.city}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAddressForm(true);
+                          setEditingAddressId(null);
+                          form.reset();
+                        }}
+                        className="w-full p-4 rounded-lg mb-6 flex items-center justify-center gap-2 border border-border-default bg-white hover:bg-bg-inactive transition-colors"
+                      >
+                        <span className="text-lg text-brand-primary">+</span>
+                        <span className="text-text-primary font-medium">{labels.addNewAddress}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleConfirmAddress}
+                        disabled={!selectedAddressId}
+                        className="w-full py-3.5 px-4 rounded-lg font-medium text-white shadow-sm transition-all focus:ring-4 focus:ring-brand-primary-lighter disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: selectedAddressId ? "var(--color-brand-primary)" : "var(--color-text-disabled)" }}
+                      >
+                        {labels.continue}
+                      </button>
+                    </>
+                  )}
+
+                  {/* Address form */}
+                  {showAddressForm && (
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onAddressSubmit)} className="space-y-5">
+                        {/* Address Type Selector */}
+                        <FormField
+                          control={form.control}
+                          name="addressType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="block text-sm font-medium text-text-secondary mb-3">
+                                {labels.addressType}
+                              </FormLabel>
+                              <div className="grid grid-cols-3 gap-3">
+                                <label className="cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    className="hidden peer"
+                                    checked={field.value === "home"}
+                                    onChange={() => field.onChange("home")}
+                                  />
+                                  <div className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
+                                    field.value === "home"
+                                      ? "border-brand-primary-light bg-brand-primary-lighter text-brand-primary ring-1 ring-brand-primary"
+                                      : "border-border-default bg-white text-text-secondary hover:bg-bg-inactive"
+                                  }`}>
+                                    <Home size={16} />
+                                    <span className="text-sm font-medium">{language === "nb" ? "Hjemme" : "Home"}</span>
+                                  </div>
+                                </label>
+                                <label className="cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    className="hidden peer"
+                                    checked={field.value === "work"}
+                                    onChange={() => field.onChange("work")}
+                                  />
+                                  <div className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
+                                    field.value === "work"
+                                      ? "border-brand-primary-light bg-brand-primary-lighter text-brand-primary ring-1 ring-brand-primary"
+                                      : "border-border-default bg-white text-text-secondary hover:bg-bg-inactive"
+                                  }`}>
+                                    <Building2 size={16} />
+                                    <span className="text-sm font-medium">{language === "nb" ? "Jobb" : "Work"}</span>
+                                  </div>
+                                </label>
+                                <label className="cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    className="hidden peer"
+                                    checked={field.value === "other"}
+                                    onChange={() => field.onChange("other")}
+                                  />
+                                  <div className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all ${
+                                    field.value === "other"
+                                      ? "border-brand-primary-light bg-brand-primary-lighter text-brand-primary ring-1 ring-brand-primary"
+                                      : "border-border-default bg-white text-text-secondary hover:bg-bg-inactive"
+                                  }`}>
+                                    <MapPin size={16} />
+                                    <span className="text-sm font-medium">{language === "nb" ? "Annet" : "Other"}</span>
+                                  </div>
+                                </label>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
 
                       <FormField
                         control={form.control}
@@ -837,18 +935,18 @@ export default function CheckoutSection({
             )}
           </div>
 
-          {/* Step 2: Delivery */}
-          <div
-            className={`bg-white rounded-xl overflow-hidden transition-all ${
-              activeSection === "delivery" ? "shadow-sm border border-border-default" : "border border-border-default"
-            } ${!addressCompleted ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <button
-              type="button"
-              onClick={() => addressCompleted && setActiveSection("delivery")}
-              className="w-full p-6 flex items-center justify-between"
-              disabled={!addressCompleted}
+            {/* Step 2: Delivery */}
+            <div
+              className={`bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden transition-all border ${
+                activeSection === "delivery" ? "shadow-md border-brand-primary-light/70" : "border-border-default"
+              } ${!addressCompleted ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
             >
+              <button
+                type="button"
+                onClick={() => addressCompleted && setActiveSection("delivery")}
+                className="w-full p-6 md:p-8 flex items-center justify-between"
+                disabled={!addressCompleted}
+              >
               <div className="flex items-center gap-4">
                 {deliveryCompleted ? (
                   <span className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-primary text-white">
@@ -874,12 +972,12 @@ export default function CheckoutSection({
               ) : (
                 <ChevronDown className="w-5 h-5 text-text-disabled" />
               )}
-            </button>
+              </button>
 
-            {activeSection === "delivery" && addressCompleted && (
-              <div className="px-6 pb-6 md:px-8 md:pb-8">
-                <div className="flex flex-col gap-3 mb-6">
-                  {/* Drop-off */}
+              {activeSection === "delivery" && addressCompleted && (
+                <div className="px-6 pb-6 md:px-8 md:pb-8">
+                  <div className="flex flex-col gap-3 mb-6">
+                    {/* Drop-off */}
                   <ExpandableButtonOption
                     label={
                       getLocalizedValue(pickupOption?.name, language) ||
@@ -947,94 +1045,166 @@ export default function CheckoutSection({
                       setPostenSelected(false);
                     }}
                   />
-                </div>
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={handleConfirmDelivery}
-                  disabled={!isDeliveryValid}
-                  className="w-full py-3.5 px-4 rounded-lg font-medium text-white shadow-sm transition-all focus:ring-4 focus:ring-brand-primary-lighter disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: isDeliveryValid ? "var(--color-brand-primary)" : "var(--color-text-disabled)" }}
-                >
-                  {labels.continue}
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={handleConfirmDelivery}
+                    disabled={!isDeliveryValid}
+                    className="w-full py-3.5 px-4 rounded-lg font-medium text-white shadow-sm transition-all focus:ring-4 focus:ring-brand-primary-lighter disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ backgroundColor: isDeliveryValid ? "var(--color-brand-primary)" : "var(--color-text-disabled)" }}
+                  >
+                    {labels.continue}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Step 3: Payment & Summary */}
+            <div
+              className={`bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden transition-all border ${
+                activeSection === "payment" ? "shadow-md border-brand-primary-light/70" : "border-border-default"
+              } ${!deliveryCompleted ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              <button
+                type="button"
+                onClick={() => deliveryCompleted && setActiveSection("payment")}
+                className="w-full p-6 md:p-8 flex items-center justify-between"
+                disabled={!deliveryCompleted}
+              >
+                <div className="flex items-center gap-4">
+                  <span
+                    className={`flex items-center justify-center w-8 h-8 rounded-full font-medium text-sm border ${
+                      activeSection === "payment" && deliveryCompleted
+                        ? "bg-brand-primary text-white border-brand-primary"
+                        : "bg-bg-default text-text-secondary border-border-default"
+                    }`}
+                  >
+                    3
+                  </span>
+                  <h2 className={`text-lg font-medium ${activeSection === "payment" || canPay ? "text-text-primary" : "text-text-secondary"}`}>
+                    {labels.payment}
+                  </h2>
+                </div>
+                {activeSection === "payment" ? (
+                  <ChevronUp className="w-5 h-5 text-text-disabled" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-text-disabled" />
+                )}
+              </button>
+
+              {activeSection === "payment" && deliveryCompleted && (
+                <div className="px-6 pb-6 md:px-8 md:pb-8 space-y-6">
+                  <div className="hidden lg:block bg-bg-inactive border border-border-default rounded-lg p-4 text-sm text-text-secondary">
+                    {language === "nb"
+                      ? "Se over ordresammendraget til høyre og betal når alt ser riktig ut."
+                      : "Review the order summary on the right and pay when everything looks good."}
+                  </div>
+
+                  <div className="lg:hidden space-y-5">
+                    <h3 className="text-lg font-medium tracking-tight text-text-primary">{labels.orderSummary}</h3>
+
+                    <div className="space-y-3 text-base">
+                      {allCartItems.map((item, index) => (
+                        <div key={index} className="flex justify-between items-start">
+                          <span className="text-text-secondary">{item.title}</span>
+                          <span className="font-medium text-text-primary">{item.price} kr</span>
+                        </div>
+                      ))}
+
+                      <div className="flex justify-between items-start">
+                        <span className="text-text-secondary">{labels.shipping}</span>
+                        <span className="font-medium text-text-primary">
+                          {shippingLabel}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border-default border-dashed" />
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-base font-medium text-text-primary">
+                        {labels.total}{" "}
+                        <span className="text-text-secondary font-normal text-sm ml-1">({labels.inclVat})</span>
+                      </span>
+                      <span className="text-xl font-semibold tracking-tight text-text-primary">{total} kr</span>
+                    </div>
+
+                    {paymentError && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                        {paymentError}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handlePayment}
+                      disabled={!canPay || isLoading}
+                      className="w-full py-3.5 px-4 rounded-lg font-medium text-white shadow-sm transition-all flex justify-center items-center gap-2 focus:ring-4 focus:ring-brand-primary-lighter disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ backgroundColor: canPay && !isLoading ? "var(--color-brand-primary)" : "var(--color-text-disabled)" }}
+                    >
+                      <CreditCard size={16} />
+                      {isLoading ? labels.processing : labels.payWithCard}
+                    </button>
+
+                    <p className="text-xs text-text-secondary text-center">
+                      {language === "nb" ? "Betalingen håndteres sikkert av Stripe." : "Payment is securely handled by Stripe."}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Step 3: Payment & Summary */}
-          <div
-            className={`bg-white rounded-xl overflow-hidden transition-all ${
-              activeSection === "payment" ? "shadow-sm border border-border-default" : "border border-border-default"
-            } ${!deliveryCompleted ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <button
-              type="button"
-              onClick={() => deliveryCompleted && setActiveSection("payment")}
-              className="w-full p-6 flex items-center justify-between"
-              disabled={!deliveryCompleted}
-            >
-              <div className="flex items-center gap-4">
-                <span
-                  className={`flex items-center justify-center w-8 h-8 rounded-full font-medium text-sm border ${
-                    activeSection === "payment" && deliveryCompleted
-                      ? "bg-brand-primary text-white border-brand-primary"
-                      : "bg-bg-default text-text-secondary border-border-default"
-                  }`}
-                >
-                  3
-                </span>
-                <h2 className={`text-lg font-medium ${activeSection === "payment" || canPay ? "text-text-primary" : "text-text-secondary"}`}>
-                  {labels.payment}
-                </h2>
+          <aside className="sticky top-4 space-y-4 hidden lg:block">
+            <div className="bg-white border border-border-default rounded-2xl shadow-sm p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-text-secondary">{labels.orderSummary}</p>
+                  <p className="text-lg font-semibold text-text-primary mt-1">
+                    {language === "nb" ? "Siste sjekk" : "Final review"}
+                  </p>
+                </div>
+                <div className="px-3 py-1 rounded-full bg-brand-primary-lighter text-brand-primary text-xs font-medium">
+                  {steps[currentStepIndex]?.label}
+                </div>
               </div>
-              {activeSection === "payment" ? (
-                <ChevronUp className="w-5 h-5 text-text-disabled" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-text-disabled" />
-              )}
-            </button>
 
-            {activeSection === "payment" && deliveryCompleted && (
-              <div className="px-6 pb-6 md:px-8 md:pb-8">
-              <h3 className="text-lg font-medium tracking-tight mb-6 text-text-primary">{labels.orderSummary}</h3>
-
-              <div className="space-y-3 text-base">
+              <div className="space-y-3">
                 {allCartItems.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start">
-                    <span className="text-text-secondary">{item.title}</span>
-                    <span className="font-medium text-text-primary">{item.price} kr</span>
+                  <div key={index} className="flex justify-between items-start text-sm">
+                    <span className="text-text-secondary pr-4">{item.title}</span>
+                    <span className="text-text-primary font-medium">{item.price} kr</span>
                   </div>
                 ))}
+              </div>
 
-                {deliveryCompleted && shippingCost > 0 && (
-                  <div className="flex justify-between items-start">
-                    <span className="text-text-secondary">{labels.shipping}</span>
-                    <span className="font-medium text-text-primary">
-                      {shippingCost === 0 ? labels.free : `${shippingCost} kr`}
-                    </span>
+              <div className="pt-3 border-t border-dashed border-border-default space-y-3 text-sm">
+                <div className="flex items-start justify-between">
+                  <div className="text-text-secondary">
+                    {labels.shipping}
+                    <div className="text-[11px] text-text-disabled mt-0.5">{deliveryTitle}</div>
                   </div>
-                )}
+                  <div className="text-text-primary font-medium text-right">
+                    {shippingLabel}
+                    <div className="text-[11px] text-text-disabled">{deliverySummaryLine}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-base font-semibold text-text-primary">
+                    {labels.total} <span className="text-sm font-normal text-text-secondary">({labels.inclVat})</span>
+                  </span>
+                  <span className="text-xl font-semibold text-text-primary">{total} kr</span>
+                </div>
               </div>
 
-              <div className="my-6 border-t border-border-default border-dashed" />
-
-              <div className="flex justify-between items-center mb-8">
-                <span className="text-base font-medium text-text-primary">
-                  {labels.total}{" "}
-                  <span className="text-text-secondary font-normal text-sm ml-1">({labels.inclVat})</span>
-                </span>
-                <span className="text-xl font-semibold tracking-tight text-text-primary">{total} kr</span>
-              </div>
-
-              {/* Error Message */}
               {paymentError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                   {paymentError}
                 </div>
               )}
 
-              {/* Payment Button */}
               <button
                 type="button"
                 onClick={handlePayment}
@@ -1045,9 +1215,23 @@ export default function CheckoutSection({
                 <CreditCard size={16} />
                 {isLoading ? labels.processing : labels.payWithCard}
               </button>
-              </div>
-            )}
-          </div>
+
+              <p className="text-[11px] text-text-secondary text-center">
+                {language === "nb" ? "Betalingen håndteres sikkert av Stripe." : "Payments are securely handled by Stripe."}
+              </p>
+            </div>
+
+            <div className="bg-brand-primary-lighter/70 border border-brand-primary-light text-brand-primary rounded-2xl p-4">
+              <p className="text-sm font-semibold">
+                {language === "nb" ? "Hurtig tips" : "Quick tip"}
+              </p>
+              <p className="text-sm mt-1">
+                {language === "nb"
+                  ? "Leveringsvalg og møtesteder lagres lokalt slik at du slipper å fylle inn alt på nytt."
+                  : "We save delivery choices locally so you can check out even faster next time."}
+              </p>
+            </div>
+          </aside>
         </div>
       </div>
     </div>

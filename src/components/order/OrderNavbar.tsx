@@ -19,9 +19,11 @@ const OrderNavbar = ({ siteSettings }: OrderNavbarProps) => {
 
   const cartItemCount = cart.length + 1; // +1 for static item
 
+  const containerClass = "mx-auto max-w-5xl px-4 sm:px-6 lg:px-8";
+
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="container mx-auto px-6">
+      <div className={containerClass}>
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/order/garment" className="hover:opacity-80 transition-opacity">

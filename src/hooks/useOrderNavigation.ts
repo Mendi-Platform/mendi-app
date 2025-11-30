@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useOrderFlow } from './useOrderFlow';
 import { useCart } from '@/contexts/CartContext';
 import type { OrderFlowStepExpanded, SanityOrderStepGroup } from '@/sanity/lib/types';
+import type { FormData } from '@/types/formData';
 
 interface OrderFlowConfig {
   startStepSlug: string;
@@ -16,15 +17,19 @@ export function useOrderNavigation(orderFlowConfig: OrderFlowConfig | null) {
   const { formData } = useCart();
   const flowState = useOrderFlow(orderFlowConfig);
 
-  const navigateToNext = useCallback((currentStepSlug: string) => {
-    if (!flowState?.navigator) return;
+  const navigateToNext = useCallback(
+    (currentStepSlug: string, updatedFormData?: Partial<FormData>) => {
+      if (!flowState?.navigator) return;
 
-    const nextSlug = flowState.navigator.getNextStep(currentStepSlug, formData);
+      const mergedFormData = updatedFormData ? { ...formData, ...updatedFormData } : formData;
+      const nextSlug = flowState.navigator.getNextStep(currentStepSlug, mergedFormData);
 
-    if (nextSlug) {
-      router.push(`/order/${nextSlug}`);
-    }
-  }, [flowState, formData, router]);
+      if (nextSlug) {
+        router.push(`/order/${nextSlug}`);
+      }
+    },
+    [flowState, formData, router]
+  );
 
   const navigateToPrevious = useCallback(() => {
     if (!flowState || flowState.currentIndex <= 0) return;

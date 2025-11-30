@@ -43,13 +43,13 @@ const OrderSteps = ({ orderFlowConfig }: OrderStepsProps) => {
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="mt-2 flex items-center justify-between text-xs">
+        <div className="mt-2 flex items-center justify-between text-md">
           {canGoBack && (
             <button
               onClick={navigateToPrevious}
               className="flex items-center gap-1 text-brand-primary hover:text-brand-primary-hover transition-colors"
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={30} />
               {labels.previous}
             </button>
           )}

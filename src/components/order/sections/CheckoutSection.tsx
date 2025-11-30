@@ -554,63 +554,12 @@ export default function CheckoutSection({
   const selectedAddress = savedAddresses.find((addr) => addr.id === selectedAddressId);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-bg-default via-white to-white">
+    <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="py-2 px-4 rounded-lg font-medium border border-border-default bg-white text-text-primary hover:bg-bg-inactive transition-colors inline-flex items-center gap-2 shadow-sm"
-          >
-            ← {labels.goBack}
-          </button>
-          <div className="hidden md:flex items-center gap-2 text-xs text-text-secondary">
-            <span className="w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
-            <span>{language === "nb" ? "Trygg, kryptert betaling" : "Secure, encrypted checkout"}</span>
-          </div>
-        </div>
-
         <div className="mb-6">
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-text-primary">
             {labels.title}
           </h1>
-          <p className="text-text-secondary mt-2 text-base max-w-2xl">
-            {language === "nb"
-              ? "Fullfør bestillingen i tre enkle steg. Vi lagrer leveringsvalg og adresser for en raskere opplevelse neste gang."
-              : "Complete your order in three quick steps. We keep your delivery picks handy for faster checkouts next time."}
-          </p>
-        </div>
-
-        <div className="mb-8 bg-white/80 backdrop-blur-sm border border-border-default rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-text-primary">
-              {language === "nb" ? "Fremdrift" : "Progress"}
-            </span>
-            <span className="text-xs text-text-secondary">
-              {currentStepIndex + 1}/{steps.length}
-            </span>
-          </div>
-          <div className="h-2 rounded-full bg-bg-default overflow-hidden">
-            <div
-              className="h-full bg-brand-primary transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-          <div className="grid grid-cols-3 text-[11px] uppercase tracking-wide text-text-secondary mt-3">
-            {steps.map((step, index) => (
-              <span
-                key={step.key}
-                className={`flex items-center gap-2 ${index === currentStepIndex ? "text-text-primary font-semibold" : ""}`}
-              >
-                <span
-                  className={`w-4 h-4 rounded-full border ${
-                    step.complete ? "bg-brand-primary border-brand-primary" : "border-border-default bg-bg-default"
-                  }`}
-                />
-                {step.label}
-              </span>
-            ))}
-          </div>
         </div>
 
         <div className="grid lg:grid-cols-[2fr,1fr] gap-6 lg:gap-8 items-start">

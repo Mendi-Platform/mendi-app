@@ -28,10 +28,9 @@ export default function ServiceSection({ repairTypes, orderFlowConfig }: Service
 
   const onChoice = (slug: RepairTypeSlug) => {
     updateFormField("repairTypeSlug", slug);
-  };
-
-  const handleContinue = () => {
-    navigateToNext('service'); // Current step slug
+    navigateToNext('service', {
+      repairTypeSlug: slug,
+    }); // Current step slug
   };
 
   // Filter repair types based on garment (curtains have limited options)
@@ -45,17 +44,14 @@ export default function ServiceSection({ repairTypes, orderFlowConfig }: Service
     title: language === 'nb'
       ? 'Hvordan vil du at plagget skal repareres?'
       : 'How would you like the garment to be repaired?',
-    continue: language === 'nb' ? 'Fortsett' : 'Continue',
   };
-
-  const isEnabled = formData.repairTypeSlug !== '';
 
   return (
     <>
       <h1 className="font-medium text-lg mb-11">
         {labels.title}
       </h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-14">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {filteredRepairTypes.map((repairType) => (
           <GridButtonOption
             key={repairType._id}
@@ -65,18 +61,6 @@ export default function ServiceSection({ repairTypes, orderFlowConfig }: Service
           />
         ))}
       </div>
-      <button
-        type="button"
-        onClick={handleContinue}
-        disabled={!isEnabled}
-        className={`block w-full text-center py-2.5 rounded-[20px] ${
-          !isEnabled
-            ? "bg-white text-[#A7A7A7] border border-black/30 cursor-auto"
-            : "bg-[#006EFF] text-white"
-        } hover:opacity-70 text-xl font-semibold`}
-      >
-        {labels.continue}
-      </button>
     </>
   );
 }

@@ -40,7 +40,7 @@ const IconWrapper = ({ icon }: { icon: StaticImageData | string }) => {
   const isUrl = typeof icon === 'string';
 
   return (
-    <div className="bg-[#E2E2E2] border border-[#006EFF] h-16 w-16 flex justify-center items-center rounded-xl">
+    <div className="bg-[#E2E2E2] border border-brand-primary h-16 w-16 flex justify-center items-center rounded-xl">
       <Image
         src={icon}
         alt="Icon"

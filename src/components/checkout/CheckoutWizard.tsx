@@ -75,11 +75,6 @@ const CheckoutWizard: React.FC<CheckoutWizardProps> = ({
     <div className="flex flex-col lg:flex-row lg:gap-12 w-full">
       {/* Main Content Area */}
       <div className="flex-1 lg:max-w-xl">
-        {/* Stepper - Always visible */}
-        <div className="mb-8">
-          <Stepper steps={steps} currentStep={currentStep} />
-        </div>
-
         {/* Page Content */}
         {children}
       </div>

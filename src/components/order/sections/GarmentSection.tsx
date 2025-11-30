@@ -26,15 +26,12 @@ export default function GarmentSection({ garments, orderFlowConfig }: GarmentSec
   const onChoice = (slug: GarmentSlug) => {
     updateFormField("garmentSlug", slug);
     // Auto-set premium category for outer-wear
-    if (slug === 'outer-wear') {
-      updateFormField("categorySlug", 'premium');
-    } else {
-      updateFormField("categorySlug", '');
-    }
-  };
-
-  const handleContinue = () => {
-    navigateToNext('garment');
+    const categorySlug = slug === 'outer-wear' ? 'premium' : '';
+    updateFormField("categorySlug", categorySlug);
+    navigateToNext('garment', {
+      garmentSlug: slug,
+      categorySlug,
+    });
   };
 
   // i18n labels
@@ -42,17 +39,14 @@ export default function GarmentSection({ garments, orderFlowConfig }: GarmentSec
     title: language === 'nb'
       ? 'Hvilken type plagg vil du registrere?'
       : 'What type of garment would you like to register?',
-    continue: language === 'nb' ? 'Fortsett' : 'Continue',
   };
-
-  const isEnabled = formData.garmentSlug !== '';
 
   return (
     <>
       <h1 className="font-medium text-lg mb-11">
         {labels.title}
       </h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-14">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {garments.map((garment) => (
           <GridButtonOption
             key={garment._id}
@@ -63,18 +57,6 @@ export default function GarmentSection({ garments, orderFlowConfig }: GarmentSec
           />
         ))}
       </div>
-      <button
-        type="button"
-        onClick={handleContinue}
-        disabled={!isEnabled}
-        className={`block w-full text-center py-2.5 rounded-[20px] ${
-          !isEnabled
-            ? "bg-white text-[#A7A7A7] border border-black/30 cursor-auto"
-            : "bg-[#006EFF] text-white"
-        } hover:opacity-70 text-xl font-semibold`}
-      >
-        {labels.continue}
-      </button>
     </>
   );
 }

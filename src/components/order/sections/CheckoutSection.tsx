@@ -555,13 +555,7 @@ export default function CheckoutSection({
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-text-primary">
-            {labels.title}
-          </h1>
-        </div>
-
+      <div className="max-w-6xl mx-auto px-2 md:px-6 lg:px-4 py-4 lg:py-6">
         <div className="grid lg:grid-cols-[2fr,1fr] gap-6 lg:gap-8 items-start">
           <div className="space-y-6">
             {/* Step 1: Address */}

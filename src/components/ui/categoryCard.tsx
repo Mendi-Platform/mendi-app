@@ -76,6 +76,8 @@ const ActionButtons = ({ onEdit, onDelete }: { onEdit?: () => void; onDelete?: (
       <button
         type="button"
         onClick={e => { e.stopPropagation(); onDelete(); }}
+        aria-label="Remove item"
+        data-testid="cart-remove-button"
         className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F6F6F6] hover:bg-[#E2E2E2]"
       >
         <Trash2 size={16} />
@@ -85,6 +87,8 @@ const ActionButtons = ({ onEdit, onDelete }: { onEdit?: () => void; onDelete?: (
       <button
         type="button"
         onClick={e => { e.stopPropagation(); onEdit(); }}
+        aria-label="Edit item"
+        data-testid="cart-edit-button"
         className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F6F6F6] hover:bg-[#E2E2E2]"
       >
         <Pencil size={16} />

@@ -68,6 +68,10 @@ export class OrderFlowNavigator {
    * Check if a step should be skipped
    */
   private shouldSkipStep(step: OrderFlowStepExpanded, formData: FormData): boolean {
+    if (step.slug?.current === 'measurement-details') {
+      return true;
+    }
+
     if (!step.isOptional || !step.skipConditions) return false;
 
     return step.skipConditions.some(condition =>

@@ -179,7 +179,7 @@ export default function CartSection({
         <span className="text-base font-bold" style={{ color: colors.textPrimary }}>
           {labels.subtotal} <span className="text-xs font-normal" style={{ color: colors.textSecondary }}>{labels.inclVat}</span>
         </span>
-        <span className="text-base font-medium">{subtotal} kr</span>
+        <span className="text-base font-medium" data-testid="cart-subtotal-amount">{subtotal} kr</span>
       </div>
       <button
         type="button"

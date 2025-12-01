@@ -10,6 +10,10 @@ import type {
   SanityRepairPrice,
   SanitySiteSettings,
 } from './types';
+import { getE2EMockData } from '@/tests/e2e/sanityMocks';
+
+const isE2ETest = process.env.E2E_TEST_MODE === 'true';
+const e2eMocks = isE2ETest ? getE2EMockData() : null;
 
 // GROQ Queries
 export const getPricingQuery = groq`*[_type == "pricing"][0]{
@@ -97,26 +101,32 @@ export const getSiteSettingsQuery = groq`*[_type == "siteSettings"][0]{
 
 // Fetch Functions with caching
 export async function getPricing(): Promise<SanityPricing | null> {
+  if (e2eMocks) return e2eMocks.pricing;
   return client.fetch(getPricingQuery, {}, { next: { revalidate: 60 } });
 }
 
 export async function getStoreLocations(): Promise<SanityStoreLocation[]> {
+  if (e2eMocks) return e2eMocks.storeLocations;
   return client.fetch(getStoreLocationsQuery, {}, { next: { revalidate: 60 } });
 }
 
 export async function getPostenOptions(): Promise<SanityPostenOption[]> {
+  if (e2eMocks) return e2eMocks.postenOptions;
   return client.fetch(getPostenOptionsQuery, {}, { next: { revalidate: 60 } });
 }
 
 export async function getDeliveryOptions(): Promise<SanityDeliveryOption[]> {
+  if (e2eMocks) return e2eMocks.deliveryOptions;
   return client.fetch(getDeliveryOptionsQuery, {}, { next: { revalidate: 60 } });
 }
 
 export async function getGarments(): Promise<SanityGarment[]> {
+  if (e2eMocks) return e2eMocks.garments;
   return client.fetch(getGarmentsQuery, {}, { next: { revalidate: 60 } });
 }
 
 export async function getRepairTypes(): Promise<SanityRepairType[]> {
+  if (e2eMocks) return e2eMocks.repairTypes;
   return client.fetch(getRepairTypesQuery, {}, { next: { revalidate: 60 } });
 }
 
@@ -125,6 +135,7 @@ export async function getRepairPrices(): Promise<SanityRepairPrice[]> {
 }
 
 export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
+  if (e2eMocks) return e2eMocks.siteSettings;
   return client.fetch(getSiteSettingsQuery, {}, { next: { revalidate: 60 } });
 }
 
@@ -181,5 +192,6 @@ export async function getOrderFlow(): Promise<{
     stepGroups: import('./types').SanityOrderStepGroup[];
   };
 } | null> {
+  if (e2eMocks) return e2eMocks.orderFlow;
   return client.fetch(getOrderFlowQuery, {}, { next: { revalidate: 60 } });
 }

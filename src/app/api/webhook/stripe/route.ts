@@ -4,10 +4,22 @@ import { updateOrderStatus } from '@/lib/orders';
 import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
-  const body = await request.text();
+  let body: string;
+
+  try {
+    body = await request.text();
+  } catch (err) {
+    console.error('Failed to read request body:', err);
+    return NextResponse.json(
+      { error: 'Failed to read request body' },
+      { status: 400 }
+    );
+  }
+
   const signature = request.headers.get('stripe-signature');
 
   if (!signature) {
+    console.error('Missing stripe-signature header');
     return NextResponse.json(
       { error: 'Missing stripe-signature header' },
       { status: 400 }
@@ -17,7 +29,7 @@ export async function POST(request: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
-    console.error('STRIPE_WEBHOOK_SECRET is not set');
+    console.error('STRIPE_WEBHOOK_SECRET is not set in environment variables');
     return NextResponse.json(
       { error: 'Webhook secret not configured' },
       { status: 500 }
@@ -31,6 +43,8 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.error(`Webhook signature verification failed: ${errorMessage}`);
+    console.error('Signature received:', signature?.substring(0, 20) + '...');
+    console.error('Body length:', body.length);
     return NextResponse.json(
       { error: `Webhook Error: ${errorMessage}` },
       { status: 400 }

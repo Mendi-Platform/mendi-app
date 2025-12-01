@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useOrderNavigation } from "@/hooks/useOrderNavigation";
@@ -20,61 +20,51 @@ export default function MeasurementDetailsSection({ orderFlowConfig }: Measureme
   const { formData, updateRepairDetails } = useCart();
   const { navigateToNext } = useOrderNavigation(orderFlowConfig);
 
-  const [details, setDetails] = useState(formData.repairDetails.detailsText || '');
+  const [details, setDetails] = useState(formData.repairDetails.detailsText || "");
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   const labels = {
-    title: language === 'nb' ? 'Tilleggsdetaljer om mål:' : 'Additional measurement details:',
-    placeholder: language === 'nb'
-      ? 'Beskriv eventuelle spesielle ønsker...'
-      : 'Describe any special requests...',
-    hint: language === 'nb'
-      ? 'Valgfritt: Legg til mer informasjon om hvordan du vil ha plagget tilpasset.'
-      : 'Optional: Add more information about how you want the garment adjusted.',
-    continue: language === 'nb' ? 'Fortsett' : 'Continue',
-    skip: language === 'nb' ? 'Hopp over' : 'Skip',
-  };
-
-  const handleChange = (value: string) => {
-    setDetails(value);
-    updateRepairDetails('detailsText', value);
+    title: language === "nb" ? "Viderekobler…" : "Redirecting…",
+    description: language === "nb"
+      ? "Mål og detaljer legges nå inn på samme side. Du blir sendt videre automatisk."
+      : "Measurements and details now live on the same page. We’ll move you forward automatically.",
+    button: language === "nb" ? "Fortsett" : "Continue",
   };
 
   const handleContinue = () => {
-    navigateToNext('measurement-details');
+    updateRepairDetails("detailsText", details);
+    navigateToNext("measurement-details");
+    setHasNavigated(true);
   };
 
-  return (
-    <div className="w-full max-w-md lg:max-w-2xl mx-auto">
-      <h1 className="font-medium text-lg mb-3">{labels.title}</h1>
-      <p className="text-sm text-[#797979] mb-8">{labels.hint}</p>
+  useEffect(() => {
+    if (!hasNavigated) {
+      handleContinue();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasNavigated]);
 
-      <div className="mb-14">
+  return (
+    <div className="w-full max-w-3xl space-y-4">
+      <div className="rounded-3xl border border-gray-100 bg-gradient-to-br from-white via-slate-50 to-[#E7F1FF] shadow-sm p-6">
+        <h1 className="text-xl font-semibold text-gray-900 mb-2">{labels.title}</h1>
+        <p className="text-sm text-gray-600">{labels.description}</p>
+      </div>
+      <div className="rounded-3xl border border-gray-200 bg-white shadow-sm p-6 space-y-3">
         <textarea
           value={details}
-          onChange={(e) => handleChange(e.target.value)}
-          placeholder={labels.placeholder}
-          rows={4}
-          className="w-full p-4 rounded-[18px] border border-[#E5E5E5] focus:border-[#006EFF] focus:outline-none text-base resize-none"
+          onChange={(e) => setDetails(e.target.value)}
+          placeholder=""
+          rows={3}
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 shadow-inner focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition resize-none"
         />
-      </div>
-
-      <div className="flex flex-col gap-3">
         <button
           type="button"
           onClick={handleContinue}
-          className="block w-full text-center py-2.5 rounded-[20px] bg-[#006EFF] text-white hover:opacity-70 text-xl font-semibold"
+          className="w-full rounded-[18px] bg-[#006EFF] text-white text-lg font-semibold py-3 shadow hover:-translate-y-0.5 transition"
         >
-          {labels.continue}
+          {labels.button}
         </button>
-        {!details && (
-          <button
-            type="button"
-            onClick={handleContinue}
-            className="block w-full text-center py-2.5 rounded-[20px] bg-white text-[#797979] border border-[#E5E5E5] hover:border-[#006EFF] text-lg"
-          >
-            {labels.skip}
-          </button>
-        )}
       </div>
     </div>
   );

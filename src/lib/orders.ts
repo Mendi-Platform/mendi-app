@@ -76,20 +76,29 @@ export async function createOrder(data: CreateOrderData): Promise<string> {
   return docRef.id;
 }
 
+interface UpdateOrderOptions {
+  stripeSessionId?: string;
+  customerEmail?: string;
+}
+
 /**
- * Updates an order's status and optionally adds stripe session ID
+ * Updates an order's status and optionally adds stripe session ID and customer email
  */
 export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus,
-  stripeSessionId?: string
+  options?: UpdateOrderOptions
 ): Promise<void> {
   const orderRef = doc(db, 'orders', orderId);
 
   const updateData: Partial<Order> = { status };
 
-  if (stripeSessionId) {
-    updateData.stripeSessionId = stripeSessionId;
+  if (options?.stripeSessionId) {
+    updateData.stripeSessionId = options.stripeSessionId;
+  }
+
+  if (options?.customerEmail) {
+    updateData.customerEmail = options.customerEmail;
   }
 
   if (status === 'paid') {

@@ -56,11 +56,15 @@ export async function POST(request: NextRequest) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
       const orderId = session.metadata?.orderId;
+      const customerEmail = session.customer_details?.email || session.customer_email || undefined;
 
       if (orderId) {
         try {
-          await updateOrderStatus(orderId, 'paid', session.id);
-          console.log(`Order ${orderId} marked as paid`);
+          await updateOrderStatus(orderId, 'paid', {
+            stripeSessionId: session.id,
+            customerEmail,
+          });
+          console.log(`Order ${orderId} marked as paid${customerEmail ? ` for ${customerEmail}` : ''}`);
         } catch (error) {
           console.error(`Failed to update order ${orderId}:`, error);
         }
@@ -76,7 +80,7 @@ export async function POST(request: NextRequest) {
 
       if (orderId) {
         try {
-          await updateOrderStatus(orderId, 'failed', session.id);
+          await updateOrderStatus(orderId, 'failed', { stripeSessionId: session.id });
           console.log(`Order ${orderId} marked as failed (session expired)`);
         } catch (error) {
           console.error(`Failed to update order ${orderId}:`, error);

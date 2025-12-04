@@ -145,6 +145,7 @@ export default function CheckoutSection({
   // Payment state
   const [isLoading, setIsLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState("");
 
   const form = useForm<AddressFormData>({
     resolver: zodResolver(addressFormSchema),
@@ -434,6 +435,7 @@ export default function CheckoutSection({
         total,
         deliveryMethod: selectedDelivery,
         deliveryDetails,
+        customerEmail,
       });
 
       const response = await fetch("/api/checkout", {
@@ -444,6 +446,7 @@ export default function CheckoutSection({
           items: orderItems,
           shippingCost,
           total,
+          customerEmail,
         }),
       });
 
@@ -467,7 +470,8 @@ export default function CheckoutSection({
     }
   };
 
-  const canPay = addressCompleted && deliveryCompleted;
+  const isEmailValid = Boolean(customerEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail));
+  const canPay = addressCompleted && deliveryCompleted && isEmailValid;
 
   // Labels
   const labels = {
@@ -494,6 +498,7 @@ export default function CheckoutSection({
     saveAddress: language === "nb" ? "Lagre denne adressen for fremtidige bestillinger" : "Save this address for future orders",
     cancel: language === "nb" ? "Avbryt" : "Cancel",
     goBack: language === "nb" ? "Gå tilbake" : "Go back",
+    email: language === "nb" ? "E-post" : "Email",
   };
 
   const steps: { key: CheckoutSectionType; label: string; complete: boolean }[] = [
@@ -1038,6 +1043,24 @@ export default function CheckoutSection({
 
               {activeSection === "payment" && deliveryCompleted && (
                 <div className="px-6 pb-6 md:px-8 md:pb-8 space-y-6">
+                  {/* Email input */}
+                  <div>
+                    <label htmlFor="customer-email" className="block text-sm font-medium text-text-primary mb-2">
+                      {labels.email}
+                    </label>
+                    <Input
+                      id="customer-email"
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder={language === "nb" ? "din@epost.no" : "your@email.com"}
+                      className="w-full px-4 py-3 rounded-lg border border-border-default text-base bg-white text-text-primary placeholder:text-text-disabled focus:border-brand-primary focus:ring-4 focus:ring-brand-primary-lighter"
+                    />
+                    <p className="mt-1.5 text-xs text-text-secondary">
+                      {language === "nb" ? "Vi sender ordrebekreftelse til denne e-posten." : "We'll send order confirmation to this email."}
+                    </p>
+                  </div>
+
                   <div className="hidden lg:block bg-bg-inactive border border-border-default rounded-lg p-4 text-sm text-text-secondary">
                     {language === "nb"
                       ? "Se over ordresammendraget til høyre og betal når alt ser riktig ut."

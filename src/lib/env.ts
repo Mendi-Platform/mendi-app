@@ -27,7 +27,8 @@ interface EnvConfig {
 type OptionalEnvKeys =
   | 'NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID'
   | 'SENDGRID_API_KEY'
-  | 'SANITY_EDITOR_TOKEN';
+  | 'SANITY_EDITOR_TOKEN'
+  | 'CUSTOMERIO_API_KEY';
 
 function getRequiredEnvVar(key: keyof EnvConfig): string {
   const value = process.env[key];
@@ -96,5 +97,8 @@ export const env = {
   },
   sendgrid: {
     apiKey: getOptionalEnvVar('SENDGRID_API_KEY'),
+  },
+  customerio: {
+    apiKey: getOptionalEnvVar('CUSTOMERIO_API_KEY'),
   },
 };

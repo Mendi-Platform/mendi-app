@@ -26,6 +26,7 @@
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "customerio-node": "^4.2.0",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^11.6.1",
     "iron-session": "^8.0.4",

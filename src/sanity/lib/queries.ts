@@ -143,7 +143,7 @@ export const getOrderFlowQuery = groq`*[_type == "siteSettings"][0]{
   orderFlowConfig {
     "startStepSlug": startStep->slug.current,
     "confirmationStepSlug": confirmationStep->slug.current,
-    "allSteps": *[_type == "orderFlowStep"] | order(defaultOrder asc) {
+    "allSteps": allSteps[]-> {
       _id,
       slug,
       label { nb, en },

@@ -136,10 +136,11 @@ export default defineType({
         },
         {
           name: 'allSteps',
-          title: 'All Steps (for reference)',
+          title: 'Order Flow Steps (Drag to Reorder)',
           type: 'array',
           of: [{ type: 'reference', to: [{ type: 'orderFlowStep' }] }],
-          description: 'All available steps in default order'
+          description: 'Drag and drop to reorder steps. This order determines the step sequence in the order flow.',
+          validation: (Rule) => Rule.unique().error('Each step can only appear once')
         },
         {
           name: 'stepGroups',

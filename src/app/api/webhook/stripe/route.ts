@@ -68,11 +68,28 @@ export async function POST(request: NextRequest) {
           console.log(`Order ${orderId} marked as paid${customerEmail ? ` for ${customerEmail}` : ''}`);
 
           // Send order confirmation email via Customer.io
+          console.log(`[Webhook] Attempting to send confirmation email. Customer email: ${customerEmail || 'NOT PROVIDED'}`);
+
           if (customerEmail) {
             try {
               const order = await getOrder(orderId);
-              await sendTransactionalEmailWithTemplate({
-                transactionalMessageId: process.env.CUSTOMERIO_ORDER_CONFIRMATION_TEMPLATE_ID || 'order_confirmation',
+              console.log(`[Webhook] Order fetched for email:`, {
+                orderId,
+                hasOrder: !!order,
+                total: order?.total,
+                itemCount: order?.items?.length || 0,
+              });
+
+              const templateId = process.env.CUSTOMERIO_ORDER_CONFIRMATION_TEMPLATE_ID || 'order_confirmation';
+              const hasApiKey = !!process.env.CUSTOMERIO_API_KEY;
+              console.log(`[Webhook] Customer.io config:`, {
+                templateId,
+                hasApiKey,
+                apiKeyPrefix: process.env.CUSTOMERIO_API_KEY?.substring(0, 4) || 'N/A',
+              });
+
+              const emailPayload = {
+                transactionalMessageId: templateId,
                 identifiers: { email: customerEmail },
                 to: customerEmail,
                 messageData: {
@@ -83,12 +100,17 @@ export async function POST(request: NextRequest) {
                   shippingCost: order?.shippingCost || 0,
                   deliveryMethod: order?.deliveryMethod || '',
                 },
-              });
-              console.log(`Order confirmation email sent to ${customerEmail}`);
+              };
+              console.log(`[Webhook] Sending email with payload:`, JSON.stringify(emailPayload, null, 2));
+
+              const result = await sendTransactionalEmailWithTemplate(emailPayload);
+              console.log(`[Webhook] Email sent successfully:`, result);
             } catch (emailError) {
-              console.error(`Failed to send confirmation email for order ${orderId}:`, emailError);
+              console.error(`[Webhook] Failed to send confirmation email for order ${orderId}:`, emailError);
               // Don't fail the webhook if email fails
             }
+          } else {
+            console.warn(`[Webhook] No customer email provided, skipping confirmation email`);
           }
         } catch (error) {
           console.error(`Failed to update order ${orderId}:`, error);

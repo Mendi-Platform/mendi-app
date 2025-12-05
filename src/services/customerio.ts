@@ -36,7 +36,10 @@ function getCustomerIOClient(): APIClient {
 export async function sendTransactionalEmailWithTemplate(
   params: TransactionalEmailWithTemplateParams
 ): Promise<CustomerIOResponse> {
+  console.log("[CustomerIO] Starting sendTransactionalEmailWithTemplate");
+
   const client = getCustomerIOClient();
+  console.log("[CustomerIO] Client initialized");
 
   const request = new SendEmailRequest({
     transactional_message_id: params.transactionalMessageId,
@@ -44,16 +47,24 @@ export async function sendTransactionalEmailWithTemplate(
     to: params.to,
     message_data: params.messageData,
   });
+  console.log("[CustomerIO] Request created:", {
+    transactional_message_id: params.transactionalMessageId,
+    to: params.to,
+    identifiers: params.identifiers,
+  });
 
   try {
+    console.log("[CustomerIO] Sending email...");
     const response = await client.sendEmail(request);
+    console.log("[CustomerIO] Email sent successfully:", response);
     return response as CustomerIOResponse;
   } catch (error) {
     const customerIOError = error as CustomerIOError;
     console.error(
-      "Customer.io email error:",
+      "[CustomerIO] Email error:",
       customerIOError.statusCode,
-      customerIOError.message
+      customerIOError.message,
+      customerIOError
     );
     throw customerIOError;
   }

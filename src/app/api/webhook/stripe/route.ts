@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { updateOrderStatus } from '@/lib/orders';
+import { updateOrderStatus, getOrder } from '@/lib/orders';
+import { sendTransactionalEmailWithTemplate } from '@/services/customerio';
 import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
@@ -65,6 +66,30 @@ export async function POST(request: NextRequest) {
             customerEmail,
           });
           console.log(`Order ${orderId} marked as paid${customerEmail ? ` for ${customerEmail}` : ''}`);
+
+          // Send order confirmation email via Customer.io
+          if (customerEmail) {
+            try {
+              const order = await getOrder(orderId);
+              await sendTransactionalEmailWithTemplate({
+                transactionalMessageId: process.env.CUSTOMERIO_ORDER_CONFIRMATION_TEMPLATE_ID || 'order_confirmation',
+                identifiers: { email: customerEmail },
+                to: customerEmail,
+                messageData: {
+                  orderId,
+                  total: order?.total || (session.amount_total ? session.amount_total / 100 : 0),
+                  currency: session.currency?.toUpperCase() || 'NOK',
+                  items: order?.items || [],
+                  shippingCost: order?.shippingCost || 0,
+                  deliveryMethod: order?.deliveryMethod || '',
+                },
+              });
+              console.log(`Order confirmation email sent to ${customerEmail}`);
+            } catch (emailError) {
+              console.error(`Failed to send confirmation email for order ${orderId}:`, emailError);
+              // Don't fail the webhook if email fails
+            }
+          }
         } catch (error) {
           console.error(`Failed to update order ${orderId}:`, error);
         }

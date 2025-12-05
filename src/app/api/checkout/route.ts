@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Update order with Stripe session ID
-    await updateOrderStatus(orderId, 'pending', session.id);
+    await updateOrderStatus(orderId, 'pending', { stripeSessionId: session.id });
 
     return NextResponse.json({
       url: session.url,
